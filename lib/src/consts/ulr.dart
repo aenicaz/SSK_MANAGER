@@ -1,0 +1,1 @@
+const String databaseUrl = 'D:/Projects/ssk_manager/lib/src/asseets/database/sqfile.db';
