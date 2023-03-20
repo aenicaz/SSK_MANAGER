@@ -1,11 +1,9 @@
-import 'dart:convert';
-
-import 'package:data_table_2/data_table_2.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
-import 'package:sqflite/sqflite.dart';
 import 'package:ssk_manager/src/database_provider/databace_provider.dart';
+import 'package:ssk_manager/src/widgets/custom_table.dart';
 import 'package:ssk_manager/src/widgets/left_side_menu.dart';
+
+import '../models/computers.dart';
 
 class InventoryPage extends StatefulWidget {
   const InventoryPage({super.key});
@@ -15,21 +13,35 @@ class InventoryPage extends StatefulWidget {
 }
 
 class _InventoryPageState extends State<InventoryPage> {
-  List computers = [];
+  List<Computer> computerList = [];
 
-  Future readJson() async {
-    final String responce = await rootBundle.loadString('assets/dataset.json');
-    final data = await json.decode(responce);
-
-    setState(() {
-      computers = data;
-      debugPrint(computers.length.toString());
-    });
+  Future getDataFromDb() async {
+    computerList = await InventoryListDatabase.getDataFromDatabase();
   }
 
-  @override
-  void initState() {
-    super.initState();
+  List<DataRow> generateDataRow(List<Computer> computerList) {
+    List<DataRow> dataList = [];
+
+    computerList.forEach((element) {
+      dataList.add(DataRow(cells: [
+        DataCell(
+            onTap: () {
+          debugPrint(element.toString());
+        },
+            Text(element.id.toString())),
+        DataCell(Text(element.model.toString())),
+        DataCell(Text(element.invNumber.toString())),
+        DataCell(Text(element.sealNumber.toString())),
+        DataCell(Text(element.productNumber.toString())),
+        DataCell(Text(element.buhName.toString())),
+        DataCell(Text(element.userName.toString())),
+        DataCell(Text(element.storage.toString())),
+        DataCell(Text(element.sealNumber.toString())),
+        DataCell(Text(element.comment.toString())),
+      ]));
+    });
+
+    return dataList;
   }
 
   @override
@@ -47,12 +59,26 @@ class _InventoryPageState extends State<InventoryPage> {
           child: Row(
             mainAxisSize: MainAxisSize.max,
             children: [
-              LeftSideMenu(func: readJson()),
+              LeftSideMenu(func: null),
               Expanded(
                 child: Column(
                   mainAxisSize: MainAxisSize.max,
+                  mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    newMethod(),
+                    FutureBuilder(
+                      future: getDataFromDb(),
+                      builder: (context, snapshot) {
+                        if (snapshot.connectionState == ConnectionState.done) {
+                          return CustomTable(dataRowList: generateDataRow(computerList));
+                        } else {
+                          return Center(
+                            child: CircularProgressIndicator(
+                              color: Colors.blue.shade700,
+                            ),
+                          );
+                        }
+                      },
+                    ),
                   ],
                 ),
               ),
@@ -60,62 +86,6 @@ class _InventoryPageState extends State<InventoryPage> {
           ),
         ),
       ),
-    );
-  }
-
-  Expanded newMethod() {
-    return Expanded(
-      child: DataTable2(
-          columnSpacing: 12,
-          horizontalMargin: 12,
-          minWidth: 600,
-          columns: [
-            DataColumn2(
-              label: Text('Модель'),
-              size: ColumnSize.S,
-              tooltip: AutofillHints.birthday,
-            ),
-            DataColumn2(
-              label: Text('Серийный номер'),
-              size: ColumnSize.S,
-            ),
-            DataColumn2(
-              label: Text('Номер продукта'),
-              size: ColumnSize.S,
-            ),
-            DataColumn2(
-              label: Text('Бухгалтерский номер'),
-              size: ColumnSize.S,
-            ),
-            DataColumn2(
-              label: Text('Имя пользователся'),
-              size: ColumnSize.S,
-            ),
-            DataColumn2(
-              label: Text('Место хранения'),
-              size: ColumnSize.S,
-            ),
-            DataColumn2(
-              label: Text('Номер пломбы'),
-              size: ColumnSize.S,
-            ),
-            DataColumn2(
-              label: Text('Примечание'),
-              size: ColumnSize.S,
-            ),
-          ],
-          rows: List<DataRow>.generate(
-              100,
-              (index) => DataRow(cells: [
-                    DataCell(Text(index.toString())),
-                    DataCell(Text('B' * (10 - (index + 5) % 10))),
-                    DataCell(Text('C' * (15 - (index + 5) % 10))),
-                    DataCell(Text('D' * (15 - (index + 10) % 10))),
-                    DataCell(Text(((index + 0.1) * 25.4).toString())),
-                    DataCell(Text(((index + 0.1) * 25.4).toString())),
-                    DataCell(Text(((index + 0.1) * 25.4).toString())),
-                    DataCell(Text(((index + 0.1) * 25.4).toString()))
-                  ]))),
     );
   }
 }

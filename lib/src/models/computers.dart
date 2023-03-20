@@ -90,7 +90,7 @@ class Computer{
   };
 
   static Computer fromJson(Map<String, Object?> json) => Computer(
-        id : json[ComputerFields.id] as int,
+        id : json[ComputerFields.id] as int?,
         model : json[ComputerFields.model] as String,
         buhName : json[ComputerFields.buhName] as String,
         serialNumber : json[ComputerFields.serialNumber] as String,

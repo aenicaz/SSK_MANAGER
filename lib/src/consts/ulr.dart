@@ -1,1 +1,2 @@
-const String databaseUrl = 'D:/Projects/ssk_manager/lib/src/asseets/database/sqfile.db';
+const String databaseUrl =
+    'D:/Projects/SSK_MANAGER/lib/src/asseets/database/sqfile.db';
