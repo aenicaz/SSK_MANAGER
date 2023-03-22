@@ -1,6 +1,10 @@
+import 'dart:ffi';
+
 import 'package:data_table_2/data_table_2.dart';
+import 'package:dropdown_button2/dropdown_button2.dart';
 import 'package:flutter/material.dart';
 
+import '../consts/data.dart';
 import '../widgets/left_side_menu.dart';
 
 class IncomePage extends StatefulWidget {
@@ -11,15 +15,26 @@ class IncomePage extends StatefulWidget {
 }
 
 class _IncomePageState extends State<IncomePage> {
-  final TextEditingController _controller = TextEditingController();
-  final TextEditingController _controllerNumber = TextEditingController();
+  final TextEditingController _dataController = TextEditingController();
+  final TextEditingController _providerController = TextEditingController();
+  final TextEditingController _techTypeController = TextEditingController();
+  final TextEditingController _buhNumberController = TextEditingController();
+  final TextEditingController _countController = TextEditingController();
+  final TextEditingController _priceController = TextEditingController();
+  final TextEditingController _totalPriceController = TextEditingController();
+
+  @override
+  void initState() {
+    getAll();
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         title: const Text('SSK Resource / IncomePage'),
-        actions: [],
+        actions: const [],
         centerTitle: false,
         elevation: 2,
       ),
@@ -43,7 +58,7 @@ class _IncomePageState extends State<IncomePage> {
                               TabBar(
                                 labelColor: Colors.black87,
                                 indicatorColor: Colors.amber,
-                                tabs: [
+                                tabs: const [
                                   Tab(
                                     text: 'Cоздать поступление',
                                   ),
@@ -66,9 +81,10 @@ class _IncomePageState extends State<IncomePage> {
                                           Expanded(
                                               child: Padding(
                                             padding: const EdgeInsets.only(
-                                                left: 10, right: 700),
+                                                left: 95, right: 700),
                                             child: TextFormField(
                                               textAlign: TextAlign.center,
+                                              controller: _dataController,
                                             ),
                                           )),
                                         ],
@@ -79,9 +95,10 @@ class _IncomePageState extends State<IncomePage> {
                                           Expanded(
                                               child: Padding(
                                             padding: const EdgeInsets.only(
-                                                left: 10, right: 700),
+                                                left: 55, right: 700),
                                             child: TextFormField(
                                               textAlign: TextAlign.center,
+                                              controller: _providerController,
                                             ),
                                           )),
                                         ],
@@ -92,9 +109,40 @@ class _IncomePageState extends State<IncomePage> {
                                           Expanded(
                                               child: Padding(
                                             padding: const EdgeInsets.only(
-                                                left: 10, right: 700),
+                                                left: 50, right: 700),
+                                            child:  TextFormField(
+                                              textAlign: TextAlign.center,
+                                              controller: _techTypeController,
+                                            ),
+                                              ),
+                                          ),
+                                        ],
+                                      ),
+                                      Row(
+                                        children: [
+                                          Text("Бухгалтерский номер"),
+                                          Expanded(
+                                            child: Padding(
+                                              padding: const EdgeInsets.only(
+                                                  left: 50, right: 700),
+                                              child:  TextFormField(
+                                                textAlign: TextAlign.center,
+                                                controller: _buhNumberController,
+                                              ),
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                      Row(
+                                        children: [
+                                          Text("Цена            "),
+                                          Expanded(
+                                              child: Padding(
+                                            padding: const EdgeInsets.only(
+                                                left: 50, right: 700),
                                             child: TextFormField(
                                               textAlign: TextAlign.center,
+                                              controller: _priceController,
                                             ),
                                           )),
                                         ],
@@ -104,27 +152,19 @@ class _IncomePageState extends State<IncomePage> {
                                           Text("Количество"),
                                           Expanded(
                                               child: Padding(
-                                            padding: const EdgeInsets.only(
-                                                left: 10, right: 700),
-                                            child: TextFormField(
-                                              textAlign: TextAlign.center,
-                                            ),
-                                          )),
-                                        ],
-                                      ),
-                                      Row(
-                                        children: [
-                                          Text("Цена"),
-                                          Expanded(
-                                              child: Padding(
-                                            padding: const EdgeInsets.only(
-                                                left: 10, right: 700),
-                                            child: TextFormField(
-                                              onChanged: (value) =>
-                                                  {_controller.text = value},
-                                              textAlign: TextAlign.center,
-                                            ),
-                                          )),
+                                                padding: const EdgeInsets.only(
+                                                    left: 55, right: 700),
+                                                child: TextFormField(
+                                                  textAlign: TextAlign.center,
+                                                  onChanged: (value) {
+                                                   var tmp1 = int.parse(value);
+                                                   var tmp2 = int.parse(_priceController.text);
+                                                   _totalPriceController.text = (tmp1 * tmp2).toString();
+                                                   debugPrint(_totalPriceController.text);
+                                                  },
+                                                  controller: _countController,
+                                                ),
+                                              )),
                                         ],
                                       ),
                                       Row(
@@ -137,7 +177,7 @@ class _IncomePageState extends State<IncomePage> {
                                             child: TextFormField(
                                               textAlign: TextAlign.center,
                                               enabled: false,
-                                              controller: _controller,
+                                              controller: _totalPriceController,
                                             ),
                                           )),
                                         ],
@@ -164,14 +204,18 @@ class _IncomePageState extends State<IncomePage> {
                                             TextButton(
                                                 onPressed: () {
                                                   setState(() {
-                                                    _controllerNumber
-                                                        .text = (int.parse(
-                                                                _controllerNumber
-                                                                    .text) +
-                                                            1)
-                                                        .toString();
-                                                    debugPrint(
-                                                        _controllerNumber.text);
+                                                    incomeList.add(
+                                                        DataRow(cells: [
+                                                          DataCell(Text(_dataController.text)),
+                                                          DataCell(Text(_providerController.text)),
+                                                          DataCell(Text(_techTypeController.text)),
+                                                          DataCell(Text(_buhNumberController.text)),
+                                                          DataCell(Text(_countController.text)),
+                                                          DataCell(Text(_priceController.text)),
+                                                          DataCell(Text(_totalPriceController.text)),
+                                                          DataCell(Text(incomeList.length.toString())),
+                                                        ])
+                                                    );
                                                   });
                                                 },
                                                 child: Text('Coхранить')),
@@ -240,16 +284,7 @@ class _IncomePageState extends State<IncomePage> {
                                           children: [
                                             TextButton(
                                                 onPressed: () {
-                                                  setState(() {
-                                                    _controllerNumber
-                                                        .text = (int.parse(
-                                                                _controllerNumber
-                                                                    .text) +
-                                                            1)
-                                                        .toString();
-                                                    debugPrint(
-                                                        _controllerNumber.text);
-                                                  });
+
                                                 },
                                                 child: Text('Coхранить')),
                                           ],
@@ -264,18 +299,17 @@ class _IncomePageState extends State<IncomePage> {
                                             columnSpacing: 12,
                                             horizontalMargin: 12,
                                             minWidth: 600,
-                                            columns: [
+                                            columns: const [
                                               DataColumn2(
-                                                label: Text('Модель'),
-                                                size: ColumnSize.S,
-                                                tooltip: AutofillHints.birthday,
+                                                label: Text('Дата'),
+                                                size: ColumnSize.S
                                               ),
                                               DataColumn2(
-                                                label: Text('Серийный номер'),
+                                                label: Text('Поставщик'),
                                                 size: ColumnSize.S,
                                               ),
                                               DataColumn2(
-                                                label: Text('Номер продукта'),
+                                                label: Text('Тип техники'),
                                                 size: ColumnSize.S,
                                               ),
                                               DataColumn2(
@@ -285,52 +319,24 @@ class _IncomePageState extends State<IncomePage> {
                                               ),
                                               DataColumn2(
                                                 label:
-                                                    Text('Имя пользователся'),
+                                                    Text('Количество'),
                                                 size: ColumnSize.S,
                                               ),
                                               DataColumn2(
-                                                label: Text('Место хранения'),
+                                                label: Text('Цена руб.'),
                                                 size: ColumnSize.S,
                                               ),
                                               DataColumn2(
-                                                label: Text('Номер пломбы'),
+                                                label: Text('Общая стоимость руб.'),
                                                 size: ColumnSize.S,
                                               ),
                                               DataColumn2(
-                                                label: Text('Примечание'),
+                                                label: Text('Карточка учёта №'),
                                                 size: ColumnSize.S,
                                               ),
                                             ],
-                                            rows: List<DataRow>.generate(
-                                                10,
-                                                (index) => DataRow(cells: [
-                                                      DataCell(Text(
-                                                          index.toString())),
-                                                      DataCell(Text('B' *
-                                                          (10 -
-                                                              (index + 5) %
-                                                                  10))),
-                                                      DataCell(Text('C' *
-                                                          (15 -
-                                                              (index + 5) %
-                                                                  10))),
-                                                      DataCell(Text('D' *
-                                                          (15 -
-                                                              (index + 10) %
-                                                                  10))),
-                                                      DataCell(Text(
-                                                          ((index + 0.1) * 25.4)
-                                                              .toString())),
-                                                      DataCell(Text(
-                                                          ((index + 0.1) * 25.4)
-                                                              .toString())),
-                                                      DataCell(Text(
-                                                          ((index + 0.1) * 25.4)
-                                                              .toString())),
-                                                      DataCell(Text(
-                                                          ((index + 0.1) * 25.4)
-                                                              .toString()))
-                                                    ]))),
+                                            rows: incomeList
+                                        ),
                                       )
                                     ],
                                   ),

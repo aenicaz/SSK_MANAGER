@@ -16,7 +16,7 @@ class _InventoryPageState extends State<InventoryPage> {
   List<Computer> computerList = [];
 
   Future getDataFromDb() async {
-    computerList = await InventoryListDatabase.getDataFromDatabase();
+    computerList = await InventoryListDatabase.getComputerDataFromDatabase();
   }
 
   List<DataRow> generateDataRow(List<Computer> computerList) {

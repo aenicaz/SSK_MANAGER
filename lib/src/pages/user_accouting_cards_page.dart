@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:sqflite/sqflite.dart';
 import 'package:ssk_manager/src/database_provider/databace_provider.dart';
+import 'package:ssk_manager/src/widgets/custom_table.dart';
 
+import '../models/user.dart';
 import '../widgets/left_side_menu.dart';
 
 class UserAccoutiongCardPage extends StatefulWidget {
@@ -12,12 +14,42 @@ class UserAccoutiongCardPage extends StatefulWidget {
 }
 
 class _UserAccoutiongCardPageState extends State<UserAccoutiongCardPage> {
+  List<User> userList = [];
+
+  Future getUserDataFromDb() async {
+    userList = await InventoryListDatabase.getUserDataFromDatabase();
+  }
+
+  List<DataRow> generateUserDataRow(List<User> userList) {
+    List<DataRow> dataList = [];
+
+    userList.forEach((element) {
+      dataList.add(DataRow(cells: [
+        DataCell(
+            onTap: () {
+              debugPrint(element.toString());
+            },
+            Text(element.id.toString())),
+        DataCell(Text(element.name.toString())),
+        DataCell(Text(element.status.toString())),
+        DataCell(Text(element.jobTitle.toString())),
+      ]));
+      print(element.toString());
+    });
+
+    return dataList;
+  }
+
+  @override
+  void initState() {
+    super.initState();
+  }
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         title: const Text('SSK Resource / UserAccoutiongCardPage'),
-        actions: [],
+        actions: const [],
         centerTitle: false,
         elevation: 2,
       ),

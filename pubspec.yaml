@@ -30,6 +30,10 @@ dependencies:
   sqflite_common_ffi: ^2.2.2
   data_table_2: ^2.4.1
   table_calendar: ^3.0.8
+  syncfusion_flutter_pdf: ^20.4.54
+  open_filex: ^4.3.2
+  path_provider: ^2.0.14
+  dropdown_button2: ^2.0.0
 
 dev_dependencies:
   flutter_test:
