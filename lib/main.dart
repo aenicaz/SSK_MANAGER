@@ -20,9 +20,9 @@ class MyApp extends StatelessWidget {
       initialRoute:  '/',
       routes: {
         '/' : (context) => const InventoryPage(),
-        '/incomePage' : (context) => const IncomePage(),
-        '/equipmentAccountingCardPage' : (context) => const EquipmentAccountingCardPage(),
-        '/userAccoutiongCardPage' : (context) => const UserAccoutiongCardPage(),
+        // '/incomePage' : (context) => const IncomePage(),
+        // '/equipmentAccountingCardPage' : (context) => const EquipmentAccountingCardPage(),
+        // '/userAccoutiongCardPage' : (context) => const UserAccoutiongCardPage(),
       },
     );
   }

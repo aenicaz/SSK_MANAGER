@@ -201,24 +201,27 @@ class _IncomePageState extends State<IncomePage> {
                                         padding: const EdgeInsets.all(8.0),
                                         child: Row(
                                           children: [
-                                            TextButton(
-                                                onPressed: () {
-                                                  setState(() {
-                                                    incomeList.add(
-                                                        DataRow(cells: [
-                                                          DataCell(Text(_dataController.text)),
-                                                          DataCell(Text(_providerController.text)),
-                                                          DataCell(Text(_techTypeController.text)),
-                                                          DataCell(Text(_buhNumberController.text)),
-                                                          DataCell(Text(_countController.text)),
-                                                          DataCell(Text(_priceController.text)),
-                                                          DataCell(Text(_totalPriceController.text)),
-                                                          DataCell(Text(incomeList.length.toString())),
-                                                        ])
-                                                    );
-                                                  });
-                                                },
-                                                child: Text('Coхранить')),
+                                            Padding(
+                                              padding: const EdgeInsets.only(left: 140),
+                                              child: TextButton(
+                                                  onPressed: () {
+                                                    setState(() {
+                                                      incomeList.add(
+                                                          DataRow(cells: [
+                                                            DataCell(Text(_dataController.text)),
+                                                            DataCell(Text(_providerController.text)),
+                                                            DataCell(Text(_techTypeController.text)),
+                                                            DataCell(Text(_buhNumberController.text)),
+                                                            DataCell(Text(_countController.text)),
+                                                            DataCell(Text(_priceController.text)),
+                                                            DataCell(Text(_totalPriceController.text)),
+                                                            DataCell(Text(incomeList.length.toString())),
+                                                          ])
+                                                      );
+                                                    });
+                                                  },
+                                                  child: Text('Coхранить')),
+                                            ),
                                           ],
                                         ),
                                       ),

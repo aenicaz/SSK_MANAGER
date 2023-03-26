@@ -49,3 +49,5 @@ List<DataRow> incomeList = List<DataRow>.generate(10,
       DataCell(Text(card.toString())),
     ])
 );
+
+List<String?> filterList = [];

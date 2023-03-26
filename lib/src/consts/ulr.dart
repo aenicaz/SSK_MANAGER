@@ -1,2 +1,2 @@
 const String databaseUrl =
-    'C:/distr/proj/SSK_MANAGER/lib/src/asseets/database/sqfile.db';
+    'D:/Projects/SSK_MANAGER/lib/src/asseets/database/sqfile.db';
