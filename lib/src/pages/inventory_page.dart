@@ -19,7 +19,14 @@ class _InventoryPageState extends State<InventoryPage> {
   List<Computer> _computerSortList = [];
   String _filter = '';
   List<String> tmpSelectedList = [];
-  Color color = Colors.grey.shade200;
+  TextEditingController serialNumberTextController = TextEditingController();
+  Map<String, String> tmpDropDownSelected = {
+    'User name': '',
+    'Buh number': '',
+    'Storage': '',
+  };
+
+  List<String?> zalupa = [];
 
   final List<bool> _selectedComputerList = List.generate(5, (index) => false);
 
@@ -115,6 +122,39 @@ class _InventoryPageState extends State<InventoryPage> {
     }
   }
 
+  List getUniqueValue(List<Computer> dataSource, String useCase) {
+    List<String?> storageList = [];
+
+    switch (useCase) {
+      case "Storage":
+        storageList.add('');
+        for (var element in dataSource) {
+          if (!storageList.contains(element.storage)) {
+            storageList.add(element.storage);
+          }
+        }
+        zalupa = storageList;
+        break;
+      case "User name":
+        storageList.add('');
+        for (var element in dataSource) {
+          if (!storageList.contains(element.userName)) {
+            storageList.add(element.userName);
+          }
+        }
+        break;
+      case "Buh number":
+        storageList.add('');
+        for (var element in dataSource) {
+          if (!storageList.contains(element.buhNumber)) {
+            storageList.add(element.buhNumber);
+          }
+        }
+        break;
+    }
+    return storageList;
+  }
+
   List<Padding> getSelectionComputerNameList() {
     List<Padding> filteredList = [];
 
@@ -130,6 +170,7 @@ class _InventoryPageState extends State<InventoryPage> {
 
   @override
   Widget build(BuildContext context) {
+    var selectedValue;
     return Scaffold(
       appBar: AppBar(
         title: const Text('SSK Resource / InventoryPage'),
@@ -170,40 +211,151 @@ class _InventoryPageState extends State<InventoryPage> {
               ),
               Expanded(
                 flex: 1,
-                child: Column(
-                  mainAxisSize: MainAxisSize.max,
-                  mainAxisAlignment: MainAxisAlignment.start,
+                child: ListView(
                   children: [
-                    const Padding(
-                      padding: EdgeInsets.all(30.0),
-                      child: Text('Фильтры'),
-                    ),
-                    ToggleButtons(
-                      borderRadius: const BorderRadius.all(Radius.circular(10)),
-                      direction: Axis.vertical,
-                      isSelected: _selectedComputerList,
-                      focusColor: Colors.green,
-                      children: getSelectionComputerNameList(),
-                      onPressed: (index) {
-                        setState(() {
-                          _selectedComputerList[index] =
-                              !_selectedComputerList[index];
+                    Column(
+                      mainAxisSize: MainAxisSize.max,
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      children: [
+                        const Padding(
+                          padding: EdgeInsets.all(30.0),
+                          child: Text('Фильтры'),
+                        ),
+                        ToggleButtons(
+                          borderRadius:
+                              const BorderRadius.all(Radius.circular(10)),
+                          direction: Axis.vertical,
+                          isSelected: _selectedComputerList,
+                          focusColor: Colors.green,
+                          children: getSelectionComputerNameList(),
+                          onPressed: (index) {
+                            setState(() {
+                              _selectedComputerList[index] =
+                                  !_selectedComputerList[index];
 
-                          if (tmpSelectedList.isEmpty) {
-                            tmpSelectedList.add(filterList[index]!);
-                          } else {
-                            if (tmpSelectedList.contains(filterList[index]!)) {
-                              tmpSelectedList.remove(filterList[index]!);
-                            } else {
-                              tmpSelectedList.add(filterList[index]!);
-                            }
-                          }
-                          if(tmpSelectedList.length == 0){
-                            tmpSelectedList.clear();
-                          }
-                          debugPrint(tmpSelectedList.length.toString());
-                        });
-                      },
+                              if (tmpSelectedList.isEmpty) {
+                                tmpSelectedList.add(filterList[index]!);
+                              } else {
+                                if (tmpSelectedList
+                                    .contains(filterList[index]!)) {
+                                  tmpSelectedList.remove(filterList[index]!);
+                                } else {
+                                  tmpSelectedList.add(filterList[index]!);
+                                }
+                              }
+                              if (tmpSelectedList.length == 0) {
+                                tmpSelectedList.clear();
+                              }
+                              debugPrint(tmpSelectedList.length.toString());
+                            });
+                          },
+                        ),
+                        Padding(
+                          padding: const EdgeInsets.all(10.0),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text('Серийный номер'),
+                              TextFormField(
+                                controller: serialNumberTextController,
+                              )
+                            ],
+                          ),
+                        ),
+                        Padding(
+                          padding: const EdgeInsets.all(10.0),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text('Имя пользователя'),
+                              DropdownButton(
+                                isExpanded: true,
+                                focusColor: Colors.grey.shade200,
+                                borderRadius:
+                                    BorderRadius.all(Radius.circular(10)),
+                                value: tmpDropDownSelected['User name'],
+                                items: List<DropdownMenuItem<String>>.generate(
+                                    getUniqueValue(_computerList, 'User name')
+                                        .length, (index) {
+                                  var tmp = getUniqueValue(
+                                      _computerList, 'User name');
+                                  return DropdownMenuItem(
+                                      child: Text(tmp[index]),
+                                      value: tmp[index]);
+                                }),
+                                onChanged: (Object? value) {
+                                  setState(() {
+                                    tmpDropDownSelected['User name'] =
+                                        value.toString();
+                                  });
+                                },
+                              ),
+                            ],
+                          ),
+                        ),
+                        Padding(
+                          padding: const EdgeInsets.all(10.0),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text('Бухгалтерский номер'),
+                              DropdownButton(
+                                isExpanded: true,
+                                focusColor: Colors.grey.shade200,
+                                borderRadius:
+                                    BorderRadius.all(Radius.circular(10)),
+                                value: tmpDropDownSelected['Buh number'],
+                                items: List<DropdownMenuItem<String>>.generate(
+                                    getUniqueValue(_computerList, 'Buh number')
+                                        .length, (index) {
+                                  var tmp = getUniqueValue(
+                                      _computerList, 'Buh number');
+                                  return DropdownMenuItem(
+                                      child: Text(tmp[index]),
+                                      value: tmp[index]);
+                                }),
+                                onChanged: (Object? value) {
+                                  setState(() {
+                                    tmpDropDownSelected['Buh number'] =
+                                        value.toString();
+                                  });
+                                },
+                              ),
+                            ],
+                          ),
+                        ),
+                        Padding(
+                          padding: const EdgeInsets.all(10.0),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text('Место хранения'),
+                              DropdownButton(
+                                isExpanded: true,
+                                focusColor: Colors.grey.shade200,
+                                borderRadius:
+                                    BorderRadius.all(Radius.circular(10)),
+                                value: tmpDropDownSelected['Storage'],
+                                items: List<DropdownMenuItem<String>>.generate(
+                                    getUniqueValue(_computerList, 'Storage')
+                                        .length, (index) {
+                                  var tmp =
+                                      getUniqueValue(_computerList, 'Storage');
+                                  return DropdownMenuItem(
+                                      child: Text(tmp[index]),
+                                      value: tmp[index]);
+                                }),
+                                onChanged: (Object? value) {
+                                  setState(() {
+                                    tmpDropDownSelected['Storage'] =
+                                        value.toString();
+                                  });
+                                },
+                              ),
+                            ],
+                          ),
+                        ),
+                      ],
                     ),
                   ],
                 ),

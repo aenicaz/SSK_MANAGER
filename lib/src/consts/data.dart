@@ -23,7 +23,7 @@ int buhNum = 0;
 int count = 0;
 int price = 0;
 int totalPrice = 0;
-
+Color color = Colors.grey.shade200;
 int getAll(){
   buhNum = Random().nextInt(9999999);
   count = Random().nextInt(300);
