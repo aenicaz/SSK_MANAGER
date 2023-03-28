@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:sqflite/sqflite.dart';
-import 'package:ssk_manager/src/database_provider/databace_provider.dart';
+import 'package:ssk_manager/src/database_provider/database_provider.dart';
 import 'package:ssk_manager/src/widgets/custom_table.dart';
 
 import '../models/user.dart';
@@ -25,11 +25,9 @@ class _UserAccoutiongCardPageState extends State<UserAccoutiongCardPage> {
 
     userList.forEach((element) {
       dataList.add(DataRow(cells: [
-        DataCell(
-            onTap: () {
-              debugPrint(element.toString());
-            },
-            Text(element.id.toString())),
+        DataCell(onTap: () {
+          debugPrint(element.toString());
+        }, Text(element.id.toString())),
         DataCell(Text(element.name.toString())),
         DataCell(Text(element.status.toString())),
         DataCell(Text(element.jobTitle.toString())),
@@ -44,6 +42,7 @@ class _UserAccoutiongCardPageState extends State<UserAccoutiongCardPage> {
   void initState() {
     super.initState();
   }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(

@@ -1,8 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:ssk_manager/src/pages/equipment_accounting_cards_%20page.dart';
-import 'package:ssk_manager/src/pages/income_page.dart';
 import 'package:ssk_manager/src/pages/inventory_page.dart';
-import 'package:ssk_manager/src/pages/user_accouting_cards_page.dart';
 
 void main() async {
   runApp(const MyApp());
@@ -17,9 +14,9 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         primarySwatch: Colors.blue,
       ),
-      initialRoute:  '/',
+      initialRoute: '/',
       routes: {
-        '/' : (context) => const InventoryPage(),
+        '/': (context) => const InventoryPage(),
         // '/incomePage' : (context) => const IncomePage(),
         // '/equipmentAccountingCardPage' : (context) => const EquipmentAccountingCardPage(),
         // '/userAccoutiongCardPage' : (context) => const UserAccoutiongCardPage(),

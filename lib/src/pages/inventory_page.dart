@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:ssk_manager/src/consts/data.dart';
-import 'package:ssk_manager/src/database_provider/databace_provider.dart';
+import 'package:ssk_manager/src/database_provider/database_provider.dart';
 import 'package:ssk_manager/src/widgets/custom_table.dart';
 import 'package:ssk_manager/src/widgets/left_side_menu.dart';
 
@@ -16,40 +16,37 @@ class InventoryPage extends StatefulWidget {
 class _InventoryPageState extends State<InventoryPage> {
   List<Computer> _computerList = [];
   String _filter = '';
-  List<String> tmpSelectedList = [];
-  TextEditingController serialNumberTextController = TextEditingController();
+
+  TextEditingController invNumberTextController = TextEditingController();
+
+  /*Map фильтров для списка*/
   Map<String, String> sortBy = {
     'User name': '',
+    'Inv number': '',
     'Buh number': '',
     'Storage': '',
     'Model': ''
   };
 
-  bool flag = false;
-
   Future getDataFromDb() async {
     if (_computerList.isEmpty) {
       _computerList = await InventoryListDatabase.getComputerDataFromDatabase();
-
-      for (var element in _computerList) {
-        if (!filterList.contains(element.model)) {
-          filterList.add(element.model);
-        }
-      }
+      return _computerList;
     } else {
       return _computerList;
     }
   }
 
+  /*Генерирует List строк для таблиц из исходного List компьютеров*/
   List<DataRow> generateDataRow(List<Computer> dataSource) {
     List<DataRow> dataList = [];
-    int iteraitor = 1;
+    int iterator = 1;
 
     for (var element in dataSource) {
       if (element.model == _filter) {
         color = Colors.green;
       } else {
-        if (iteraitor.isEven) {
+        if (iterator.isEven) {
           color = Colors.grey.shade300;
         } else {
           color = Colors.white;
@@ -58,7 +55,10 @@ class _InventoryPageState extends State<InventoryPage> {
 
       dataList
           .add(DataRow(color: MaterialStateProperty.all<Color>(color), cells: [
-        DataCell(onTap: () {}, Text(iteraitor.toString())),
+        DataCell(onTap: () {
+          debugPrint(element.invNumber);
+        }, showEditIcon: true, Text('')),
+        DataCell(Text(iterator.toString())),
         DataCell(onTap: () {
           setState(() {
             if (_filter == element.model) {
@@ -78,7 +78,7 @@ class _InventoryPageState extends State<InventoryPage> {
         DataCell(Text(element.comment.toString())),
       ]));
 
-      iteraitor++;
+      iterator++;
     }
     return dataList;
   }
@@ -107,7 +107,8 @@ class _InventoryPageState extends State<InventoryPage> {
       /*Временный список для хранения значений под заданный фильтр. В целом нужен только
       * для того, чтобы не конфликтовал Итератор*/
       List<Computer> newSortedList = [];
-      for (var element in exitValue) { /*Добавляем в newSortedList удовлетворяющие поиску записи*/
+      for (var element in exitValue) {
+        /*Добавляем в newSortedList удовлетворяющие поиску записи*/
         if (element.userName == sortRule['User name']) {
           newSortedList.add(element);
         }
@@ -122,14 +123,14 @@ class _InventoryPageState extends State<InventoryPage> {
         }
       }
     } else if (sortRule['Model']!.isNotEmpty) {
-      List<Computer> tmp = [];
+      List<Computer> newSortedList = [];
 
       for (var element in exitValue) {
         if (element.model == sortRule['Model']) {
-          tmp.add(element);
+          newSortedList.add(element);
         }
       }
-      exitValue = tmp;
+      exitValue = newSortedList;
     }
 
     if (sortRule['Storage']!.isNotEmpty && exitValue.isEmpty) {
@@ -139,14 +140,14 @@ class _InventoryPageState extends State<InventoryPage> {
         }
       }
     } else if (sortRule['Storage']!.isNotEmpty) {
-      List<Computer> tmp = [];
+      List<Computer> newSortedList = [];
 
       for (var element in exitValue) {
         if (element.storage == sortRule['Storage']) {
-          tmp.add(element);
+          newSortedList.add(element);
         }
       }
-      exitValue = tmp;
+      exitValue = newSortedList;
     }
 
     if (sortRule['Buh number']!.isNotEmpty && exitValue.isEmpty) {
@@ -156,24 +157,48 @@ class _InventoryPageState extends State<InventoryPage> {
         }
       }
     } else if (sortRule['Buh number']!.isNotEmpty) {
-      List<Computer> tmp = [];
+      List<Computer> newSortedList = [];
 
       for (var element in exitValue) {
         if (element.buhNumber == sortRule['Buh number']) {
-          tmp.add(element);
+          newSortedList.add(element);
         }
       }
-      exitValue = tmp;
+      exitValue = newSortedList;
     }
 
-    if(exitValue.isEmpty) return dataSource;
+    if (sortRule['Inv number']!.isNotEmpty && exitValue.isEmpty) {
+      for (var element in dataSource) {
+        if (element.invNumber!
+            .startsWith(sortRule['Inv number'].toString(), 0)) {
+          exitValue.add(element);
+        }
+      }
+    } else if (sortRule['Inv number']!.isNotEmpty) {
+      List<Computer> newSortedList = [];
+
+      for (var element in exitValue) {
+        if (element.invNumber!
+            .startsWith(sortRule['Inv number'].toString(), 0)) {
+          newSortedList.add(element);
+        }
+      }
+      exitValue = newSortedList;
+    }
+
+    if (rules.isEmpty) exitValue = dataSource;
+    // if (exitValue.isEmpty) return dataSource;
     return exitValue;
   }
 
   List<DataRow> getDataRow(
       List<Computer> dataSource, Map<String, String> sortRule) {
-    if(flag) return generateDataRow(sort(dataSource, sortRule));
-    else return generateDataRow(dataSource);
+    if (dataSource.isEmpty) {
+      getDataFromDb();
+      return generateDataRow(sort(dataSource, sortRule));
+    } else {
+      return generateDataRow(sort(dataSource, sortRule));
+    }
   }
 
   List getUniqueValue(List<Computer> dataSource, String useCase) {
@@ -213,11 +238,12 @@ class _InventoryPageState extends State<InventoryPage> {
         }
         break;
     }
+    storageList.sort();
     return storageList;
   }
 
   @override
-  initState(){
+  initState() {
     getDataFromDb();
     super.initState();
   }
@@ -227,7 +253,6 @@ class _InventoryPageState extends State<InventoryPage> {
     return Scaffold(
       appBar: AppBar(
         title: const Text('SSK Resource / InventoryPage'),
-        actions: [],
         centerTitle: false,
         elevation: 2,
       ),
@@ -275,6 +300,22 @@ class _InventoryPageState extends State<InventoryPage> {
                           child: Text('Фильтры'),
                         ),
                         Padding(
+                          padding: const EdgeInsets.all(10),
+                          child: Column(
+                            children: [
+                              const Text('Инвентарный номер'),
+                              TextField(
+                                controller: invNumberTextController,
+                                onChanged: (value) {
+                                  setState(() {
+                                    sortBy['Inv number'] = value;
+                                  });
+                                },
+                              ),
+                            ],
+                          ),
+                        ),
+                        Padding(
                           padding: const EdgeInsets.all(10.0),
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
@@ -297,7 +338,6 @@ class _InventoryPageState extends State<InventoryPage> {
                                 }),
                                 onChanged: (Object? value) {
                                   setState(() {
-                                    flag = true;
                                     sortBy['Model'] = value.toString();
                                   });
                                 },
@@ -328,7 +368,6 @@ class _InventoryPageState extends State<InventoryPage> {
                                 }),
                                 onChanged: (Object? value) {
                                   setState(() {
-                                    flag = true;
                                     sortBy['User name'] = value.toString();
                                   });
                                 },
@@ -359,7 +398,6 @@ class _InventoryPageState extends State<InventoryPage> {
                                 }),
                                 onChanged: (Object? value) {
                                   setState(() {
-                                    flag = true;
                                     sortBy['Buh number'] = value.toString();
                                   });
                                 },
@@ -390,7 +428,6 @@ class _InventoryPageState extends State<InventoryPage> {
                                 }),
                                 onChanged: (Object? value) {
                                   setState(() {
-                                    flag = true;
                                     sortBy['Storage'] = value.toString();
                                   });
                                 },
