@@ -1,4 +1,3 @@
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:ssk_manager/src/consts/data.dart';
 import 'package:ssk_manager/src/database_provider/databace_provider.dart';
@@ -16,19 +15,17 @@ class InventoryPage extends StatefulWidget {
 
 class _InventoryPageState extends State<InventoryPage> {
   List<Computer> _computerList = [];
-  List<Computer> _computerSortList = [];
   String _filter = '';
   List<String> tmpSelectedList = [];
   TextEditingController serialNumberTextController = TextEditingController();
-  Map<String, String> tmpDropDownSelected = {
+  Map<String, String> sortBy = {
     'User name': '',
     'Buh number': '',
     'Storage': '',
+    'Model': ''
   };
 
-  List<String?> zalupa = [];
-
-  final List<bool> _selectedComputerList = List.generate(5, (index) => false);
+  bool flag = false;
 
   Future getDataFromDb() async {
     if (_computerList.isEmpty) {
@@ -86,40 +83,97 @@ class _InventoryPageState extends State<InventoryPage> {
     return dataList;
   }
 
-  List<DataRow> getDataRow(List<Computer> computerList) {
-    //метод возвращает уже отформатированный список записей
-    List<DataRow> dataRowList = [];
-
-    if (computerList.isEmpty) {
-      //проверка на наличие записей из БД
-      getDataFromDb(); //записи с бд в локальный список
-      dataRowList = generateDataRow(computerList); //
-
-      return dataRowList;
-    } else if (_computerSortList.isEmpty) {
-      for (var element in computerList) {
-
-        if (tmpSelectedList.contains(element.model)) {
-          _computerSortList.add(element);
-        }
-      }
-
-      return generateDataRow(_computerSortList);
-    } else if (_computerSortList.isNotEmpty) {
-      _computerSortList.clear();
-
-      for (var element in computerList) {
-        if (tmpSelectedList.contains(element.model)) {
-          _computerSortList.add(element);
-        }
-      }
-
-      return generateDataRow(_computerSortList);
-    } else if (tmpSelectedList.isEmpty) {
-      return generateDataRow(computerList);
-    } else {
-      return generateDataRow(computerList);
+  /*Метод сортирует список по заданным правилам и возвращает уже отсортированный список*/
+  List<Computer> sort(List<Computer> dataSource, Map<String, String> sortRule) {
+    List<Computer> exitValue = []; /*Выходной список*/
+    List<String> rules = []; /*Генерируемыей из Map список фильтров*/
+    /*Тут конвертится Map в List*/
+    for (var element in sortRule.values) {
+      if (element.isNotEmpty) rules.add(element);
     }
+    /*Проверка наличия фильтра и пустотый выходного списка*/
+    if (sortRule['User name']!.isNotEmpty && exitValue.isEmpty) {
+      /*Если входной список пустой, значит фильтрации до этого небыло - это первая
+      * итерация фильтрации и следует сразу добавлять подходящие под критерий отбора записи
+      * в выходной список*/
+      for (var element in dataSource) {
+        if (element.userName == sortRule['User name']) {
+          exitValue.add(element);
+        }
+      }
+      /*Сюда попадаем только есть выходной список имеет какие-то значения, то есть
+      * до этого он уже был отфильтрован по другому фильтру*/
+    } else if (sortRule['User name']!.isNotEmpty) {
+      /*Временный список для хранения значений под заданный фильтр. В целом нужен только
+      * для того, чтобы не конфликтовал Итератор*/
+      List<Computer> newSortedList = [];
+      for (var element in exitValue) { /*Добавляем в newSortedList удовлетворяющие поиску записи*/
+        if (element.userName == sortRule['User name']) {
+          newSortedList.add(element);
+        }
+      }
+      exitValue = newSortedList;
+    }
+
+    if (sortRule['Model']!.isNotEmpty && exitValue.isEmpty) {
+      for (var element in dataSource) {
+        if (element.model == sortRule['Model']) {
+          exitValue.add(element);
+        }
+      }
+    } else if (sortRule['Model']!.isNotEmpty) {
+      List<Computer> tmp = [];
+
+      for (var element in exitValue) {
+        if (element.model == sortRule['Model']) {
+          tmp.add(element);
+        }
+      }
+      exitValue = tmp;
+    }
+
+    if (sortRule['Storage']!.isNotEmpty && exitValue.isEmpty) {
+      for (var element in dataSource) {
+        if (element.storage == sortRule['Storage']) {
+          exitValue.add(element);
+        }
+      }
+    } else if (sortRule['Storage']!.isNotEmpty) {
+      List<Computer> tmp = [];
+
+      for (var element in exitValue) {
+        if (element.storage == sortRule['Storage']) {
+          tmp.add(element);
+        }
+      }
+      exitValue = tmp;
+    }
+
+    if (sortRule['Buh number']!.isNotEmpty && exitValue.isEmpty) {
+      for (var element in dataSource) {
+        if (element.buhNumber == sortRule['Buh number']) {
+          exitValue.add(element);
+        }
+      }
+    } else if (sortRule['Buh number']!.isNotEmpty) {
+      List<Computer> tmp = [];
+
+      for (var element in exitValue) {
+        if (element.buhNumber == sortRule['Buh number']) {
+          tmp.add(element);
+        }
+      }
+      exitValue = tmp;
+    }
+
+    if(exitValue.isEmpty) return dataSource;
+    return exitValue;
+  }
+
+  List<DataRow> getDataRow(
+      List<Computer> dataSource, Map<String, String> sortRule) {
+    if(flag) return generateDataRow(sort(dataSource, sortRule));
+    else return generateDataRow(dataSource);
   }
 
   List getUniqueValue(List<Computer> dataSource, String useCase) {
@@ -133,7 +187,6 @@ class _InventoryPageState extends State<InventoryPage> {
             storageList.add(element.storage);
           }
         }
-        zalupa = storageList;
         break;
       case "User name":
         storageList.add('');
@@ -151,26 +204,26 @@ class _InventoryPageState extends State<InventoryPage> {
           }
         }
         break;
+      case "Model":
+        storageList.add('');
+        for (var element in dataSource) {
+          if (!storageList.contains(element.model)) {
+            storageList.add(element.model);
+          }
+        }
+        break;
     }
     return storageList;
   }
 
-  List<Padding> getSelectionComputerNameList() {
-    List<Padding> filteredList = [];
-
-    for (var element in filterList) {
-      filteredList.add(Padding(
-        padding: const EdgeInsets.all(8.0),
-        child: Text(element!),
-      ));
-    }
-
-    return filteredList;
+  @override
+  initState(){
+    getDataFromDb();
+    super.initState();
   }
 
   @override
   Widget build(BuildContext context) {
-    var selectedValue;
     return Scaffold(
       appBar: AppBar(
         title: const Text('SSK Resource / InventoryPage'),
@@ -184,7 +237,7 @@ class _InventoryPageState extends State<InventoryPage> {
           child: Row(
             mainAxisSize: MainAxisSize.max,
             children: [
-              LeftSideMenu(func: null),
+              const LeftSideMenu(func: null),
               Expanded(
                 flex: 5,
                 child: Column(
@@ -197,7 +250,7 @@ class _InventoryPageState extends State<InventoryPage> {
                           if (snapshot.connectionState ==
                               ConnectionState.done) {
                             return CustomTable(
-                                dataRowList: getDataRow(_computerList));
+                                dataRowList: getDataRow(_computerList, sortBy));
                           } else {
                             return Center(
                               child: CircularProgressIndicator(
@@ -221,44 +274,34 @@ class _InventoryPageState extends State<InventoryPage> {
                           padding: EdgeInsets.all(30.0),
                           child: Text('Фильтры'),
                         ),
-                        ToggleButtons(
-                          borderRadius:
-                              const BorderRadius.all(Radius.circular(10)),
-                          direction: Axis.vertical,
-                          isSelected: _selectedComputerList,
-                          focusColor: Colors.green,
-                          children: getSelectionComputerNameList(),
-                          onPressed: (index) {
-                            setState(() {
-                              _selectedComputerList[index] =
-                                  !_selectedComputerList[index];
-
-                              if (tmpSelectedList.isEmpty) {
-                                tmpSelectedList.add(filterList[index]!);
-                              } else {
-                                if (tmpSelectedList
-                                    .contains(filterList[index]!)) {
-                                  tmpSelectedList.remove(filterList[index]!);
-                                } else {
-                                  tmpSelectedList.add(filterList[index]!);
-                                }
-                              }
-                              if (tmpSelectedList.length == 0) {
-                                tmpSelectedList.clear();
-                              }
-                              debugPrint(tmpSelectedList.length.toString());
-                            });
-                          },
-                        ),
                         Padding(
                           padding: const EdgeInsets.all(10.0),
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              Text('Серийный номер'),
-                              TextFormField(
-                                controller: serialNumberTextController,
-                              )
+                              const Text('Модель'),
+                              DropdownButton(
+                                isExpanded: true,
+                                focusColor: Colors.grey.shade200,
+                                borderRadius:
+                                    const BorderRadius.all(Radius.circular(10)),
+                                value: sortBy['Model'],
+                                items: List<DropdownMenuItem<String>>.generate(
+                                    getUniqueValue(_computerList, 'Model')
+                                        .length, (index) {
+                                  var tmp =
+                                      getUniqueValue(_computerList, 'Model');
+                                  return DropdownMenuItem(
+                                      value: tmp[index],
+                                      child: Text(tmp[index]));
+                                }),
+                                onChanged: (Object? value) {
+                                  setState(() {
+                                    flag = true;
+                                    sortBy['Model'] = value.toString();
+                                  });
+                                },
+                              ),
                             ],
                           ),
                         ),
@@ -267,26 +310,26 @@ class _InventoryPageState extends State<InventoryPage> {
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              Text('Имя пользователя'),
+                              const Text('Имя пользователя'),
                               DropdownButton(
                                 isExpanded: true,
                                 focusColor: Colors.grey.shade200,
                                 borderRadius:
-                                    BorderRadius.all(Radius.circular(10)),
-                                value: tmpDropDownSelected['User name'],
+                                    const BorderRadius.all(Radius.circular(10)),
+                                value: sortBy['User name'],
                                 items: List<DropdownMenuItem<String>>.generate(
                                     getUniqueValue(_computerList, 'User name')
                                         .length, (index) {
                                   var tmp = getUniqueValue(
                                       _computerList, 'User name');
                                   return DropdownMenuItem(
-                                      child: Text(tmp[index]),
-                                      value: tmp[index]);
+                                      value: tmp[index],
+                                      child: Text(tmp[index]));
                                 }),
                                 onChanged: (Object? value) {
                                   setState(() {
-                                    tmpDropDownSelected['User name'] =
-                                        value.toString();
+                                    flag = true;
+                                    sortBy['User name'] = value.toString();
                                   });
                                 },
                               ),
@@ -298,26 +341,26 @@ class _InventoryPageState extends State<InventoryPage> {
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              Text('Бухгалтерский номер'),
+                              const Text('Бухгалтерский номер'),
                               DropdownButton(
                                 isExpanded: true,
                                 focusColor: Colors.grey.shade200,
                                 borderRadius:
-                                    BorderRadius.all(Radius.circular(10)),
-                                value: tmpDropDownSelected['Buh number'],
+                                    const BorderRadius.all(Radius.circular(10)),
+                                value: sortBy['Buh number'],
                                 items: List<DropdownMenuItem<String>>.generate(
                                     getUniqueValue(_computerList, 'Buh number')
                                         .length, (index) {
                                   var tmp = getUniqueValue(
                                       _computerList, 'Buh number');
                                   return DropdownMenuItem(
-                                      child: Text(tmp[index]),
-                                      value: tmp[index]);
+                                      value: tmp[index],
+                                      child: Text(tmp[index]));
                                 }),
                                 onChanged: (Object? value) {
                                   setState(() {
-                                    tmpDropDownSelected['Buh number'] =
-                                        value.toString();
+                                    flag = true;
+                                    sortBy['Buh number'] = value.toString();
                                   });
                                 },
                               ),
@@ -329,26 +372,26 @@ class _InventoryPageState extends State<InventoryPage> {
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              Text('Место хранения'),
+                              const Text('Место хранения'),
                               DropdownButton(
                                 isExpanded: true,
                                 focusColor: Colors.grey.shade200,
                                 borderRadius:
-                                    BorderRadius.all(Radius.circular(10)),
-                                value: tmpDropDownSelected['Storage'],
+                                    const BorderRadius.all(Radius.circular(10)),
+                                value: sortBy['Storage'],
                                 items: List<DropdownMenuItem<String>>.generate(
                                     getUniqueValue(_computerList, 'Storage')
                                         .length, (index) {
                                   var tmp =
                                       getUniqueValue(_computerList, 'Storage');
                                   return DropdownMenuItem(
-                                      child: Text(tmp[index]),
-                                      value: tmp[index]);
+                                      value: tmp[index],
+                                      child: Text(tmp[index]));
                                 }),
                                 onChanged: (Object? value) {
                                   setState(() {
-                                    tmpDropDownSelected['Storage'] =
-                                        value.toString();
+                                    flag = true;
+                                    sortBy['Storage'] = value.toString();
                                   });
                                 },
                               ),
