@@ -63,9 +63,6 @@ class _IncomePageState extends State<IncomePage> {
                                     text: 'Cоздать поступление',
                                   ),
                                   Tab(
-                                    text: 'Создать списание',
-                                  ),
-                                  Tab(
                                     text: 'История поступлений',
                                   ),
                                 ],
@@ -222,74 +219,6 @@ class _IncomePageState extends State<IncomePage> {
                                                   },
                                                   child: Text('Coхранить')),
                                             ),
-                                          ],
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                  Column(
-                                    children: [
-                                      Row(
-                                        children: [
-                                          Text("Дата"),
-                                          Expanded(
-                                              child: Padding(
-                                            padding: const EdgeInsets.only(
-                                                left: 10, right: 700),
-                                            child: TextFormField(
-                                              textAlign: TextAlign.center,
-                                            ),
-                                          )),
-                                        ],
-                                      ),
-                                      Row(
-                                        children: [
-                                          Text("Номер техники"),
-                                          Expanded(
-                                              child: Padding(
-                                            padding: const EdgeInsets.only(
-                                                left: 10, right: 700),
-                                            child: TextFormField(
-                                              textAlign: TextAlign.center,
-                                            ),
-                                          )),
-                                        ],
-                                      ),
-                                      Row(
-                                        children: [
-                                          Text("Текущий пользователь"),
-                                          Expanded(
-                                              child: Padding(
-                                            padding: const EdgeInsets.only(
-                                                left: 10, right: 700),
-                                            child: TextFormField(
-                                              textAlign: TextAlign.center,
-                                            ),
-                                          )),
-                                        ],
-                                      ),
-                                      Row(
-                                        children: [
-                                          Text("Причина списания"),
-                                          Expanded(
-                                              child: Padding(
-                                            padding: const EdgeInsets.only(
-                                                left: 10, right: 700),
-                                            child: TextFormField(
-                                              textAlign: TextAlign.center,
-                                            ),
-                                          )),
-                                        ],
-                                      ),
-                                      Padding(
-                                        padding: const EdgeInsets.all(8.0),
-                                        child: Row(
-                                          children: [
-                                            TextButton(
-                                                onPressed: () {
-
-                                                },
-                                                child: Text('Coхранить')),
                                           ],
                                         ),
                                       ),

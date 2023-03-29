@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:ssk_manager/src/pages/inventory_page.dart';
 
+import 'src/pages/income_page.dart';
+
 void main() async {
   runApp(const MyApp());
 }
@@ -17,7 +19,7 @@ class MyApp extends StatelessWidget {
       initialRoute: '/',
       routes: {
         '/': (context) => const InventoryPage(),
-        // '/incomePage' : (context) => const IncomePage(),
+        '/incomePage' : (context) => const IncomePage(),
         // '/equipmentAccountingCardPage' : (context) => const EquipmentAccountingCardPage(),
         // '/userAccoutiongCardPage' : (context) => const UserAccoutiongCardPage(),
       },

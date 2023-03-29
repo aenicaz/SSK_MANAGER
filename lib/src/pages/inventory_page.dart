@@ -187,7 +187,6 @@ class _InventoryPageState extends State<InventoryPage> {
     }
 
     if (rules.isEmpty) exitValue = dataSource;
-    // if (exitValue.isEmpty) return dataSource;
     return exitValue;
   }
 
@@ -338,8 +337,12 @@ class _InventoryPageState extends State<InventoryPage> {
                                 }),
                                 onChanged: (Object? value) {
                                   setState(() {
+                                  debugPrint(value.toString());
                                     sortBy['Model'] = value.toString();
                                   });
+                                },
+                                onTap: () {
+
                                 },
                               ),
                             ],
