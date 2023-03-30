@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:ssk_manager/src/consts/data.dart';
 import 'package:ssk_manager/src/database_provider/database_provider.dart';
-import 'package:ssk_manager/src/widgets/custom_table.dart';
+import 'package:ssk_manager/src/widgets/tables/inventory_table.dart';
 import 'package:ssk_manager/src/widgets/left_side_menu.dart';
 
 import '../models/computers.dart';
@@ -14,6 +13,7 @@ class InventoryPage extends StatefulWidget {
 }
 
 class _InventoryPageState extends State<InventoryPage> {
+  Color color = Colors.grey.shade200;
   List<Computer> _computerList = [];
   String _filter = '';
 
@@ -47,7 +47,7 @@ class _InventoryPageState extends State<InventoryPage> {
         color = Colors.green;
       } else {
         if (iterator.isEven) {
-          color = Colors.grey.shade300;
+          color = Colors.grey.shade200;
         } else {
           color = Colors.white;
         }
@@ -263,189 +263,176 @@ class _InventoryPageState extends State<InventoryPage> {
             children: [
               const LeftSideMenu(func: null),
               Expanded(
-                flex: 5,
-                child: Column(
-                    mainAxisSize: MainAxisSize.max,
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      FutureBuilder(
-                        future: getDataFromDb(),
-                        builder: (context, snapshot) {
-                          if (snapshot.connectionState ==
-                              ConnectionState.done) {
-                            return CustomTable(
-                                dataRowList: getDataRow(_computerList, sortBy));
-                          } else {
-                            return Center(
-                              child: CircularProgressIndicator(
-                                color: Colors.blue.shade700,
-                              ),
-                            );
-                          }
-                        },
-                      )
-                    ]),
+                child: FutureBuilder(
+                  future: getDataFromDb(),
+                  builder: (context, snapshot) {
+                    if (_computerList.isNotEmpty) {
+                      return Row(
+                        children: [
+                          InventoryTable(
+                              dataRowList:
+                                  getDataRow(_computerList, sortBy)),
+                          buildRightSideMenu(),
+                        ],
+                      );
+                    } else {
+                      return Center(
+                        child: CircularProgressIndicator(
+                          color: Colors.blue.shade700,
+                        ),
+                      );
+                    }
+                  },
+                ),
               ),
-              Expanded(
-                flex: 1,
-                child: ListView(
-                  children: [
-                    Column(
-                      mainAxisSize: MainAxisSize.max,
-                      mainAxisAlignment: MainAxisAlignment.start,
-                      children: [
-                        const Padding(
-                          padding: EdgeInsets.all(30.0),
-                          child: Text('Фильтры'),
-                        ),
-                        Padding(
-                          padding: const EdgeInsets.all(10),
-                          child: Column(
-                            children: [
-                              const Text('Инвентарный номер'),
-                              TextField(
-                                controller: invNumberTextController,
-                                onChanged: (value) {
-                                  setState(() {
-                                    sortBy['Inv number'] = value;
-                                  });
-                                },
-                              ),
-                            ],
-                          ),
-                        ),
-                        Padding(
-                          padding: const EdgeInsets.all(10.0),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              const Text('Модель'),
-                              DropdownButton(
-                                isExpanded: true,
-                                focusColor: Colors.grey.shade200,
-                                borderRadius:
-                                    const BorderRadius.all(Radius.circular(10)),
-                                value: sortBy['Model'],
-                                items: List<DropdownMenuItem<String>>.generate(
-                                    getUniqueValue(_computerList, 'Model')
-                                        .length, (index) {
-                                  var tmp =
-                                      getUniqueValue(_computerList, 'Model');
-                                  return DropdownMenuItem(
-                                      value: tmp[index],
-                                      child: Text(tmp[index]));
-                                }),
-                                onChanged: (Object? value) {
-                                  setState(() {
-                                  debugPrint(value.toString());
-                                    sortBy['Model'] = value.toString();
-                                  });
-                                },
-                                onTap: () {
+            ],
+          ),
+        ),
+      ),
+    );
+  }
 
-                                },
-                              ),
-                            ],
-                          ),
-                        ),
-                        Padding(
-                          padding: const EdgeInsets.all(10.0),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              const Text('Имя пользователя'),
-                              DropdownButton(
-                                isExpanded: true,
-                                focusColor: Colors.grey.shade200,
-                                borderRadius:
-                                    const BorderRadius.all(Radius.circular(10)),
-                                value: sortBy['User name'],
-                                items: List<DropdownMenuItem<String>>.generate(
-                                    getUniqueValue(_computerList, 'User name')
-                                        .length, (index) {
-                                  var tmp = getUniqueValue(
-                                      _computerList, 'User name');
-                                  return DropdownMenuItem(
-                                      value: tmp[index],
-                                      child: Text(tmp[index]));
-                                }),
-                                onChanged: (Object? value) {
-                                  setState(() {
-                                    sortBy['User name'] = value.toString();
-                                  });
-                                },
-                              ),
-                            ],
-                          ),
-                        ),
-                        Padding(
-                          padding: const EdgeInsets.all(10.0),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              const Text('Бухгалтерский номер'),
-                              DropdownButton(
-                                isExpanded: true,
-                                focusColor: Colors.grey.shade200,
-                                borderRadius:
-                                    const BorderRadius.all(Radius.circular(10)),
-                                value: sortBy['Buh number'],
-                                items: List<DropdownMenuItem<String>>.generate(
-                                    getUniqueValue(_computerList, 'Buh number')
-                                        .length, (index) {
-                                  var tmp = getUniqueValue(
-                                      _computerList, 'Buh number');
-                                  return DropdownMenuItem(
-                                      value: tmp[index],
-                                      child: Text(tmp[index]));
-                                }),
-                                onChanged: (Object? value) {
-                                  setState(() {
-                                    sortBy['Buh number'] = value.toString();
-                                  });
-                                },
-                              ),
-                            ],
-                          ),
-                        ),
-                        Padding(
-                          padding: const EdgeInsets.all(10.0),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              const Text('Место хранения'),
-                              DropdownButton(
-                                isExpanded: true,
-                                focusColor: Colors.grey.shade200,
-                                borderRadius:
-                                    const BorderRadius.all(Radius.circular(10)),
-                                value: sortBy['Storage'],
-                                items: List<DropdownMenuItem<String>>.generate(
-                                    getUniqueValue(_computerList, 'Storage')
-                                        .length, (index) {
-                                  var tmp =
-                                      getUniqueValue(_computerList, 'Storage');
-                                  return DropdownMenuItem(
-                                      value: tmp[index],
-                                      child: Text(tmp[index]));
-                                }),
-                                onChanged: (Object? value) {
-                                  setState(() {
-                                    sortBy['Storage'] = value.toString();
-                                  });
-                                },
-                              ),
-                            ],
-                          ),
-                        ),
-                      ],
+  Expanded buildRightSideMenu() {
+    return Expanded(
+      child: ListView(
+        children: [
+          Column(
+            mainAxisSize: MainAxisSize.max,
+            mainAxisAlignment: MainAxisAlignment.start,
+            children: [
+              const Padding(
+                padding: EdgeInsets.all(30.0),
+                child: Text('Фильтры'),
+              ),
+              Padding(
+                padding: const EdgeInsets.all(10),
+                child: Column(
+                  children: [
+                    const Text('Инвентарный номер'),
+                    TextField(
+                      controller: invNumberTextController,
+                      onChanged: (value) {
+                        setState(() {
+                          sortBy['Inv number'] = value;
+                        });
+                      },
+                    ),
+                  ],
+                ),
+              ),
+              Padding(
+                padding: const EdgeInsets.all(10.0),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    const Text('Модель'),
+                    DropdownButton(
+                      isExpanded: true,
+                      focusColor: Colors.grey.shade200,
+                      borderRadius: const BorderRadius.all(Radius.circular(10)),
+                      value: sortBy['Model'],
+                      items: List<DropdownMenuItem<String>>.generate(
+                          getUniqueValue(_computerList, 'Model').length,
+                          (index) {
+                        var tmp = getUniqueValue(_computerList, 'Model');
+                        return DropdownMenuItem(
+                            value: tmp[index], child: Text(tmp[index]));
+                      }),
+                      onChanged: (Object? value) {
+                        setState(() {
+                          debugPrint(value.toString());
+                          sortBy['Model'] = value.toString();
+                        });
+                      },
+                      onTap: () {},
+                    ),
+                  ],
+                ),
+              ),
+              Padding(
+                padding: const EdgeInsets.all(10.0),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    const Text('Имя пользователя'),
+                    DropdownButton(
+                      isExpanded: true,
+                      focusColor: Colors.grey.shade200,
+                      borderRadius: const BorderRadius.all(Radius.circular(10)),
+                      value: sortBy['User name'],
+                      items: List<DropdownMenuItem<String>>.generate(
+                          getUniqueValue(_computerList, 'User name').length,
+                          (index) {
+                        var tmp = getUniqueValue(_computerList, 'User name');
+                        return DropdownMenuItem(
+                            value: tmp[index], child: Text(tmp[index]));
+                      }),
+                      onChanged: (Object? value) {
+                        setState(() {
+                          sortBy['User name'] = value.toString();
+                        });
+                      },
+                    ),
+                  ],
+                ),
+              ),
+              Padding(
+                padding: const EdgeInsets.all(10.0),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    const Text('Бухгалтерский номер'),
+                    DropdownButton(
+                      isExpanded: true,
+                      focusColor: Colors.grey.shade200,
+                      borderRadius: const BorderRadius.all(Radius.circular(10)),
+                      value: sortBy['Buh number'],
+                      items: List<DropdownMenuItem<String>>.generate(
+                          getUniqueValue(_computerList, 'Buh number').length,
+                          (index) {
+                        var tmp = getUniqueValue(_computerList, 'Buh number');
+                        return DropdownMenuItem(
+                            value: tmp[index], child: Text(tmp[index]));
+                      }),
+                      onChanged: (Object? value) {
+                        setState(() {
+                          sortBy['Buh number'] = value.toString();
+                        });
+                      },
+                    ),
+                  ],
+                ),
+              ),
+              Padding(
+                padding: const EdgeInsets.all(10.0),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    const Text('Место хранения'),
+                    DropdownButton(
+                      isExpanded: true,
+                      focusColor: Colors.grey.shade200,
+                      borderRadius: const BorderRadius.all(Radius.circular(10)),
+                      value: sortBy['Storage'],
+                      items: List<DropdownMenuItem<String>>.generate(
+                          getUniqueValue(_computerList, 'Storage').length,
+                          (index) {
+                        var tmp = getUniqueValue(_computerList, 'Storage');
+                        return DropdownMenuItem(
+                            value: tmp[index], child: Text(tmp[index]));
+                      }),
+                      onChanged: (Object? value) {
+                        setState(() {
+                          sortBy['Storage'] = value.toString();
+                        });
+                      },
                     ),
                   ],
                 ),
               ),
             ],
           ),
-        ),
+        ],
       ),
     );
   }

@@ -1,7 +1,10 @@
+import 'package:flutter/material.dart';
 import 'package:sqflite_common_ffi/sqflite_ffi.dart';
 import 'package:ssk_manager/src/consts/ulr.dart';
 import 'package:ssk_manager/src/models/computers.dart';
+import 'package:ssk_manager/src/models/supply.dart';
 
+import '../models/tech_type.dart';
 import '../models/user.dart';
 
 class InventoryListDatabase {
@@ -11,7 +14,7 @@ class InventoryListDatabase {
     sqfliteFfiInit();
     List<Computer> computerList = [];
 
-    int _iterater = 1;
+    int iterater = 1;
     var databaseFactory = databaseFactoryFfi;
     var db = await databaseFactory.openDatabase(databaseUrl);
 
@@ -21,9 +24,9 @@ class InventoryListDatabase {
     
     for(var i = 0; i < databaseData.asMap().length; i++){
       computerList.add(Computer.fromJson(databaseData.asMap()[i]));
-      computerList[i].id = _iterater;
+      computerList[i].id = iterater;
 
-      _iterater++;
+      iterater++;
     }
 
     return computerList;
@@ -32,7 +35,7 @@ class InventoryListDatabase {
     sqfliteFfiInit();
     List<User> userList = [];
 
-    int _iterater = 1;
+    int iterator = 1;
     var databaseFactory = databaseFactoryFfi;
     var db = await databaseFactory.openDatabase(databaseUrl);
 
@@ -42,11 +45,53 @@ class InventoryListDatabase {
 
     for(var i = 0; i < databaseData.asMap().length; i++){
       userList.add(User.fromJson(databaseData.asMap()[i]));
-      userList[i].id = _iterater;
+      userList[i].id = iterator;
 
-      _iterater++;
+      iterator++;
     }
 
     return userList;
+  }
+  static Future getSupplyDataFromDatabase() async {
+    sqfliteFfiInit();
+    List<Supply> supplyist = [];
+
+    int iterater = 1;
+    var databaseFactory = databaseFactoryFfi;
+    var db = await databaseFactory.openDatabase(databaseUrl);
+
+    databaseData = await db.rawQuery(Supply.selectDBQuery);
+
+    await db.close();
+
+    for(var i = 0; i < databaseData.asMap().length; i++){
+      supplyist.add(Supply.fromJson(databaseData.asMap()[i]));
+      supplyist[i].id = iterater;
+
+      iterater++;
+    }
+    return supplyist;
+  }
+  static Future getTechTypeDataFromDatabase() async {
+    sqfliteFfiInit();
+    List<TechType> techTypelist = [];
+
+    int iterater = 1;
+    var databaseFactory = databaseFactoryFfi;
+    var db = await databaseFactory.openDatabase(databaseUrl);
+
+    databaseData = await db.rawQuery('select * from "$techTypeTableName"');
+
+    await db.close();
+
+    for(var i = 0; i < databaseData.asMap().length; i++){
+      techTypelist.add(TechType.fromJson(databaseData.asMap()[i]));
+      techTypelist[i].id = iterater;
+
+      iterater++;
+    }
+
+    debugPrint(techTypelist.toString());
+    return techTypelist;
   }
 }

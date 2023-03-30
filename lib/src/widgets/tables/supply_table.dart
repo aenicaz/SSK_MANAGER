@@ -1,14 +1,15 @@
 import 'package:data_table_2/data_table_2.dart';
 import 'package:flutter/material.dart';
 
-class CustomTable extends StatelessWidget {
+class SupplyTable extends StatelessWidget {
   final List<DataRow> dataRowList;
 
-  const CustomTable({super.key, required this.dataRowList});
+  const SupplyTable({super.key, required this.dataRowList});
 
   @override
   Widget build(BuildContext context) {
     return Expanded(
+      flex: 4,
       child: DataTable2(
         columnSpacing: 12,
         horizontalMargin: 12,
@@ -17,37 +18,27 @@ class CustomTable extends StatelessWidget {
           DataColumn2(label: Text(''), fixedWidth: 30),
           DataColumn2(label: Text('ID'), fixedWidth: 30),
           DataColumn2(
-            label: Text('Модель'),
-          ),
-          DataColumn2(
-            label: Text('Инв. номер'),
-          ),
-          DataColumn2(
-            label: Text('Серийный номер'),
+            label: Text('Поставщик'),
             size: ColumnSize.S,
           ),
           DataColumn2(
-            label: Text('Номер продукта'),
+            label: Text('Тип техники'),
             size: ColumnSize.S,
           ),
           DataColumn2(
-            label: Text('Бухгалтерский номер'),
+            label: Text('Дата'),
             size: ColumnSize.S,
           ),
           DataColumn2(
-            label: Text('Имя пользователся'),
+            label: Text('Количество, шт.'),
             size: ColumnSize.S,
           ),
           DataColumn2(
-            label: Text('Место хранения'),
+            label: Text('Стоимость, руб.'),
             size: ColumnSize.S,
           ),
           DataColumn2(
-            label: Text('Номер пломбы'),
-            size: ColumnSize.S,
-          ),
-          DataColumn2(
-            label: Text('Примечание'),
+            label: Text('Общая стоимость, руб.'),
             size: ColumnSize.S,
           ),
         ],

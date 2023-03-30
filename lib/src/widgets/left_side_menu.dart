@@ -47,7 +47,7 @@ class LeftSideMenu extends StatelessWidget {
           padding: EdgeInsetsDirectional.fromSTEB(10, 10, 10, 10),
           child: TextButton(
             onPressed: () {
-              Navigator.pushNamed(context, '/incomePage');
+              Navigator.pushNamed(context, '/supplyPage');
               print('Поступления');
             },
             child: Text('Поступления'),
