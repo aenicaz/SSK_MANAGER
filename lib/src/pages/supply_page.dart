@@ -13,11 +13,20 @@ class SupplyPage extends StatefulWidget {
 }
 
 class _SupplyPageState extends State<SupplyPage> {
+  var idTextEditionController = TextEditingController();
+  var supplierTextEditionController = TextEditingController();
+  var modelTextEditionController = TextEditingController();
+  var dataTextEditionController = TextEditingController();
+  var countTextEditionController = TextEditingController();
+  var pricePerPosTextEditionController = TextEditingController();
+  var totalTextEditionController = TextEditingController();
+
   List<Supply> _supplyList = [];
   Color color = Colors.grey.shade200;
   static var selectedRange = const RangeValues(1, 1000);
-  SfRangeValues _values = SfRangeValues(0.0, 10000.0);
+  SfRangeValues _values = SfRangeValues(0.0, 50000.0);
   bool flag = false;
+  String techTypeValue = 'Системный блок';
   Map<String, String> sortBy = {
     'Supplier': '',
     'Tech type': '',
@@ -26,6 +35,16 @@ class _SupplyPageState extends State<SupplyPage> {
     'Price min': '',
     'Price max': ''
   };
+
+  List<String> techType = [
+    'Системный блок',
+    'Монитор',
+    'Ноутбук',
+    'Моноблок',
+    'Принтер',
+    'МФУ',
+    'ИБП',
+  ];
 
   List getUniqueValue(List<Supply> dataSource, String useCase) {
     List<String?> storageList = [];
@@ -241,21 +260,25 @@ class _SupplyPageState extends State<SupplyPage> {
                                       Padding(
                                         padding: const EdgeInsets.all(10.0),
                                         child: Row(
-                                          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.spaceEvenly,
                                           children: [
+                                            Text('ID'),
                                             Text('Поставщик'),
                                             Text('Тип техники'),
+                                            Text('Модель'),
                                             Text('Дата'),
                                             Text('Количество'),
                                             Text('Стоимость за шт., руб.'),
                                             Text('Общая стоимость, руб.'),
-                                            Switch(value: flag,
-
+                                            Switch(
+                                              value: flag,
                                               onChanged: (value) {
-                                              setState(() {
-                                                flag = !flag;
-                                              });
-                                            },)
+                                                setState(() {
+                                                  flag = !flag;
+                                                });
+                                              },
+                                            )
                                           ],
                                         ),
                                       ),
@@ -267,43 +290,135 @@ class _SupplyPageState extends State<SupplyPage> {
                                             Expanded(
                                               child: Padding(
                                                 padding:
-                                                    const EdgeInsets.all(6.0),
-                                                child: TextFormField(),
+                                                const EdgeInsets.all(6.0),
+                                                child: TextFormField(
+                                                  decoration: InputDecoration(hintText: 'ID'),
+                                                  controller: idTextEditionController,
+                                                  onChanged: (value) {
+                                                    print(idTextEditionController.text);
+                                                  },
+                                                ),
+                                              ),
+                                            ),
+                                            Expanded(
+                                              child: Padding(
+                                                padding:
+                                                const EdgeInsets.all(6.0),
+                                                child: TextFormField(
+                                                  decoration: InputDecoration(hintText: 'Поставщик'),
+                                                  controller: supplierTextEditionController,
+                                                  onChanged: (value) {
+                                                    print(supplierTextEditionController.text);
+                                                  },
+                                                ),
                                               ),
                                             ),
                                             Expanded(
                                               child: Padding(
                                                 padding:
                                                     const EdgeInsets.all(6.0),
-                                                child: TextFormField(),
+                                                    child: DropdownButton(
+                                                      value: techTypeValue,
+                                                      isExpanded: true,
+                                                      focusColor:
+                                                          Colors.grey.shade200,
+                                                      borderRadius: const BorderRadius.all(Radius.circular(10)),
+                                                      items: List<DropdownMenuItem<String>>.generate(
+                                                          techType.length,
+                                                              (index) {
+                                                            return DropdownMenuItem(
+                                                                value: techType[index], child: Text(techType[index]));
+                                                          }),
+                                                      onChanged: (Object? value) {
+                                                      setState(() {
+                                                        techTypeValue = value.toString();
+                                                        });
+                                },
+                                                    ),
                                               ),
                                             ),
                                             Expanded(
                                               child: Padding(
                                                 padding:
-                                                    const EdgeInsets.all(6.0),
-                                                child: TextFormField(),
+                                                const EdgeInsets.all(6.0),
+                                                child: TextFormField(
+                                                  decoration: InputDecoration(hintText: 'Модель'),
+                                                  controller: modelTextEditionController,
+                                                  onChanged: (value) {
+                                                    print(modelTextEditionController.text);
+                                                  },
+                                                ),
                                               ),
                                             ),
                                             Expanded(
                                               child: Padding(
                                                 padding:
-                                                    const EdgeInsets.all(6.0),
-                                                child: TextFormField(),
+                                                const EdgeInsets.all(6.0),
+                                                child: TextFormField(
+                                                  decoration: InputDecoration(hintText: 'Дата'),
+                                                  controller: dataTextEditionController,
+                                                  onChanged: (value) {
+                                                    print(dataTextEditionController.text);
+                                                  },
+                                                ),
                                               ),
                                             ),
                                             Expanded(
                                               child: Padding(
                                                 padding:
-                                                    const EdgeInsets.all(6.0),
-                                                child: TextFormField(),
+                                                const EdgeInsets.all(6.0),
+                                                child: TextFormField(
+                                                  decoration: InputDecoration(hintText: 'Количество'),
+                                                  controller: countTextEditionController,
+                                                  onChanged: (value) {
+                                                    print(countTextEditionController.text);
+                                                  },
+                                                ),
                                               ),
                                             ),
                                             Expanded(
                                               child: Padding(
                                                 padding:
-                                                    const EdgeInsets.all(6.0),
-                                                child: TextFormField(),
+                                                const EdgeInsets.all(6.0),
+                                                child: TextFormField(
+                                                  decoration: InputDecoration(hintText: 'Стоимость за шт.'),
+                                                  controller: pricePerPosTextEditionController,
+                                                  onChanged: (value) {
+                                                    print(pricePerPosTextEditionController.text);
+                                                    //totalTextEditionController.text = pricePerPosTextEditionController.text.
+                                                  },
+                                                ),
+                                              ),
+                                            ),
+                                            Expanded(
+                                              child: Padding(
+                                                padding:
+                                                const EdgeInsets.all(6.0),
+                                                child: TextFormField(
+                                                  decoration: InputDecoration(hintText: 'Общая стоимость'),
+                                                  controller: totalTextEditionController,
+                                                  onChanged: (value) {
+                                                    print(totalTextEditionController.text);
+                                                  },
+                                                ),
+                                              ),
+                                            ),
+                                            Expanded(
+                                              child: TextButton(
+                                                child: const Text('Сохранить'),
+                                                onPressed: () {
+                                                  setState(() {
+                                                    //TODO: присвоить TextEditionController
+                                                    Supply newSupply = Supply(
+                                                      id: int.parse(idTextEditionController.text),
+                                                      count: int.parse(countTextEditionController.text),
+                                                      date: dataTextEditionController.text,
+                                                      supplier: supplierTextEditionController.text,
+                                                      techType: techTypeValue,
+                                                      pricePerPos: int.parse(pricePerPosTextEditionController.text));
+                                                     debugPrint(newSupply.toString());
+                                                  });
+                                                },
                                               ),
                                             ),
                                           ],
@@ -454,12 +569,12 @@ class _SupplyPageState extends State<SupplyPage> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  const Text('Cтоимость'),
+                  const Text('Cтоимость за единицу товара'),
                   SfRangeSlider(
                     min: 0.0,
-                    max: 10000.0,
+                    max: 50000.0,
                     stepSize: 100,
-                    interval: 2500,
+                    interval: 10000,
                     values: _values,
                     showTicks: true,
                     showLabels: true,

@@ -76,4 +76,10 @@ class Supply {
       Supply.count, Supply.price_per_pos 
       from Supply 
       INNER JOIN TechType on TechType.id = Supply.tech_type''';
+
+  //TODO: воткнуть запроос Insert
+  static const String insertDBQuery =
+  '''
+  INSERT INTO my_table(name, age) VALUES(?, ?)', [name, age]
+  ''';
 }
