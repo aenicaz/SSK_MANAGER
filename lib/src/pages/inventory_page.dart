@@ -25,12 +25,13 @@ class _InventoryPageState extends State<InventoryPage> {
     'Inv number': '',
     'Buh number': '',
     'Storage': '',
-    'Model': ''
+    'Model': '',
+    'Supply id': '',
   };
 
   Future getDataFromDb() async {
     if (_computerList.isEmpty) {
-      _computerList = await InventoryListDatabase.getComputerDataFromDatabase();
+      _computerList = await DatabaseProvider.getComputerDataFromDatabase();
       return _computerList;
     } else {
       return _computerList;
@@ -56,7 +57,168 @@ class _InventoryPageState extends State<InventoryPage> {
       dataList
           .add(DataRow(color: MaterialStateProperty.all<Color>(color), cells: [
         DataCell(onTap: () {
-          debugPrint(element.invNumber);
+          showDialog(
+              context: context,
+              builder: (context) {
+                List<TextEditingController> tmp = List.generate(10, (index) =>
+                TextEditingController());
+              return AlertDialog(
+                title: Text('Редактировать запись'),
+                content: Container(
+                  height: 200,
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Column(
+                        children: [
+                          Row(
+                            children: [
+                              Expanded(
+                                child: Column(
+                                  children: [
+                                    Text(element.model.toString()),
+                                    TextField(
+                                      controller: tmp[0],
+                                    ),
+                                  ],
+                                ),
+                              ),
+                              Expanded(
+                                child: Column(
+                                  children: [
+                                    Text(element.invNumber.toString()),
+                                    TextField(
+                                      controller: tmp[1],
+                                    ),
+                                  ],
+                                ),
+                              ),
+                              Expanded(
+                                child: Column(
+                                  children: [
+                                    Text(element.serialNumber.toString()),
+                                    TextField(
+                                      controller: tmp[2],
+                                    ),
+                                  ],
+                                ),
+                              ),
+                              Expanded(
+                                child: Column(
+                                  children: [
+                                    Text(element.productNumber.toString()),
+                                    TextField(
+                                      controller: tmp[3],
+                                    ),
+                                  ],
+                                ),
+                              ),
+                              Expanded(
+                                child: Column(
+                                  children: [
+                                    Text(element.buhNumber.toString()),
+                                    TextField(
+                                      controller: tmp[4],
+                                    ),
+                                  ],
+                                ),
+                              ),
+                              Expanded(
+                                child: Column(
+                                  children: [
+                                    Text(element.supplyId.toString()),
+                                    TextField(
+                                      controller: tmp[5],
+                                    ),
+                                  ],
+                                ),
+                              ),
+                              Expanded(
+                                child: Column(
+                                  children: [
+                                    Text(element.userName.toString(),),
+                                    TextField(
+                                      controller: tmp[6],
+                                    ),
+                                  ],
+                                ),
+                              ),
+                              Expanded(
+                                child: Column(
+                                  children: [
+                                    Text(element.storage.toString()),
+                                    TextField(
+                                      controller: tmp[7],
+                                    ),
+                                  ],
+                                ),
+                              ),
+                              Expanded(
+                                child: Column(
+                                  children: [
+                                    Text(element.sealNumber.toString()),
+                                    TextField(
+                                      controller: tmp[8],
+                                    ),
+                                  ],
+                                ),
+                              ),
+                              Expanded(
+                                child: Column(
+                                  children: [
+                                    Text(element.cleanDate.toString()),
+                                    TextField(
+                                      controller: tmp[9],
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ],
+                          ),
+                          Padding(
+                            padding: const EdgeInsets.all(10.0),
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.end,
+                              children: [
+                                MaterialButton(
+                                  onPressed: () {
+                                    setState(() {
+                                      var tmpComputer = Computer(
+                                          id: element.id,
+                                          model: tmp[0].text,
+                                          invNumber: tmp[1].text,
+                                          sealNumber: tmp[2].text,
+                                          productNumber: tmp[3].text,
+                                          buhNumber: tmp[4].text,
+                                          supplyId: tmp[5].text,
+                                          userName: tmp[6].text,
+                                          storage: tmp[7].text,
+                                          serialNumber: tmp[8].text,
+                                          cleanDate: tmp[9].text,
+                                          buhName: element.buhName,
+                                          comment: element.comment
+                                      );
+                                      var index = element.id! - 1;
+                                      _computerList[index] = tmpComputer;
+                                    });
+                                    Navigator.pop(context);
+                                    },
+                                  child: Text('Сохранить'),
+                                ),
+                                MaterialButton(
+                                  onPressed: () {Navigator.pop(context);},
+                                  child: Text('Закрыть'),
+                                )
+                              ],
+                            ),
+                          ),
+                        ],
+                      ),
+                    ],
+                  ),
+                ),
+              );
+          },);
         }, showEditIcon: true, Text('')),
         DataCell(Text(iterator.toString())),
         DataCell(onTap: () {
@@ -72,6 +234,7 @@ class _InventoryPageState extends State<InventoryPage> {
         DataCell(Text(element.sealNumber.toString())),
         DataCell(Text(element.productNumber.toString())),
         DataCell(Text(element.buhName.toString())),
+        DataCell(Text(element.supplyId.toString())),
         DataCell(Text(element.userName.toString())),
         DataCell(Text(element.storage.toString())),
         DataCell(Text(element.sealNumber.toString())),
@@ -167,6 +330,23 @@ class _InventoryPageState extends State<InventoryPage> {
       exitValue = newSortedList;
     }
 
+    if (sortRule['Supply id']!.isNotEmpty && exitValue.isEmpty) {
+      for (var element in dataSource) {
+        if (element.supplyId == sortRule['Supply id']) {
+          exitValue.add(element);
+        }
+      }
+    } else if (sortRule['Supply id']!.isNotEmpty) {
+      List<Computer> newSortedList = [];
+
+      for (var element in exitValue) {
+        if (element.supplyId == sortRule['Supply id']) {
+          newSortedList.add(element);
+        }
+      }
+      exitValue = newSortedList;
+    }
+
     if (sortRule['Inv number']!.isNotEmpty && exitValue.isEmpty) {
       for (var element in dataSource) {
         if (element.invNumber!
@@ -233,6 +413,14 @@ class _InventoryPageState extends State<InventoryPage> {
         for (var element in dataSource) {
           if (!storageList.contains(element.model)) {
             storageList.add(element.model);
+          }
+        }
+        break;
+        case "Supply id":
+        storageList.add('');
+        for (var element in dataSource) {
+          if (!storageList.contains(element.supplyId)) {
+            storageList.add(element.supplyId);
           }
         }
         break;
@@ -397,6 +585,33 @@ class _InventoryPageState extends State<InventoryPage> {
                       onChanged: (Object? value) {
                         setState(() {
                           sortBy['Buh number'] = value.toString();
+                        });
+                      },
+                    ),
+                  ],
+                ),
+              ),
+              Padding(
+                padding: const EdgeInsets.all(10.0),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    const Text('Номер поставки'),
+                    DropdownButton(
+                      isExpanded: true,
+                      focusColor: Colors.grey.shade200,
+                      borderRadius: const BorderRadius.all(Radius.circular(10)),
+                      value: sortBy['Supply id'],
+                      items: List<DropdownMenuItem<String>>.generate(
+                          getUniqueValue(_computerList, 'Supply id').length,
+                          (index) {
+                        var tmp = getUniqueValue(_computerList, 'Supply id');
+                        return DropdownMenuItem(
+                            value: tmp[index], child: Text(tmp[index]));
+                      }),
+                      onChanged: (Object? value) {
+                        setState(() {
+                          sortBy['Supply id'] = value.toString();
                         });
                       },
                     ),

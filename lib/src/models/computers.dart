@@ -9,6 +9,7 @@ class ComputerFields {
     productNumber,
     buhNumber,
     invNumber,
+    supplyId,
     userName,
     storage,
     sealNumber,
@@ -23,6 +24,7 @@ class ComputerFields {
   static final String productNumber = 'productNumber';
   static final String buhNumber = 'buhNumber';
   static final String invNumber = 'invNumber';
+  static final String supplyId = 'supplyId';
   static final String userName = 'userName';
   static final String storage = 'storage';
   static final String sealNumber = 'sealNumber';
@@ -38,6 +40,7 @@ class Computer {
   String? productNumber;
   String? buhNumber;
   String? invNumber;
+  String? supplyId;
   String? userName;
   String? storage;
   String? sealNumber;
@@ -52,6 +55,7 @@ class Computer {
     this.productNumber,
     this.buhNumber,
     this.invNumber,
+    this.supplyId,
     this.userName,
     this.storage,
     this.sealNumber,
@@ -62,7 +66,7 @@ class Computer {
   @override
   String toString() {
     return '''Recod: {id: $id, name: $model, buhName: $buhName, serial number: $serialNumber, product number: $productNumber, 
-      inventory number: $invNumber, user name: $userName, storage: $storage, seal number: $sealNumber, clean date: $cleanDate,
+      inventory number: $invNumber, supply id: $supplyId user name: $userName, storage: $storage, seal number: $sealNumber, clean date: $cleanDate,
       comment: $comment
     }''';
   }
@@ -76,6 +80,7 @@ class Computer {
       'productNumber': productNumber,
       'buhNumber': buhNumber,
       'invNumber': invNumber,
+      'supplyId': supplyId,
       'userName': userName,
       'storage': storage,
       'sealNumber': sealNumber,
@@ -92,6 +97,7 @@ class Computer {
         ComputerFields.productNumber: productNumber,
         ComputerFields.buhNumber: buhNumber,
         ComputerFields.invNumber: invNumber,
+        ComputerFields.supplyId: supplyId,
         ComputerFields.userName: userName,
         ComputerFields.storage: storage,
         ComputerFields.sealNumber: sealNumber,
@@ -107,10 +113,14 @@ class Computer {
         productNumber: json[ComputerFields.productNumber] as String,
         buhNumber: json[ComputerFields.buhNumber] as String,
         invNumber: json[ComputerFields.invNumber] as String,
+        supplyId: json[ComputerFields.supplyId] as String,
         userName: json[ComputerFields.userName] as String,
         storage: json[ComputerFields.storage] as String,
         sealNumber: json[ComputerFields.sealNumber] as String,
         cleanDate: json[ComputerFields.cleanDate] as String,
         comment: json[ComputerFields.comment] as String,
       );
+
+
+
 }
