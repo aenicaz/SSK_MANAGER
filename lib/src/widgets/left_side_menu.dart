@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:ssk_manager/src/pages/inventory_page.dart';
 import 'package:ssk_manager/src/pages/supply_page.dart';
+import 'package:ssk_manager/src/pages/user_page.dart';
 
 class LeftSideMenu extends StatelessWidget {
   final Future? func;
@@ -28,23 +29,27 @@ class LeftSideMenu extends StatelessWidget {
           ),
         ),
         Padding(
-          padding: EdgeInsetsDirectional.fromSTEB(10, 10, 10, 10),
+          padding: const EdgeInsetsDirectional.fromSTEB(10, 10, 10, 10),
           child: TextButton(
             onPressed: () {
-              Navigator.pushNamed(context, '/userAccoutiongCardPage');
-              print('Карточки сотрудников');
+              //TODO: implement ARM view
+              Navigator.pushReplacement(context,  MaterialPageRoute<void>(
+                builder: (BuildContext context) => const InventoryPage(),),
+              );
             },
-            child: Text('Карточки сотрудников'),
+            child: Text('Карточки учёта'),
           ),
         ),
         Padding(
-          padding: EdgeInsetsDirectional.fromSTEB(10, 10, 10, 10),
+          padding: const EdgeInsetsDirectional.fromSTEB(10, 10, 10, 10),
           child: TextButton(
             onPressed: () {
-              Navigator.pushNamed(context, '/equipmentAccountingCardPage');
-              print('Карточки учёта');
+              //TODO: implement user page view
+              Navigator.pushReplacement(context,  MaterialPageRoute<void>(
+                builder: (BuildContext context) => const UserPage(),),
+              );
             },
-            child: Text('Карточки учёта'),
+            child: Text('Пользователи'),
           ),
         ),
         Padding(
@@ -56,16 +61,6 @@ class LeftSideMenu extends StatelessWidget {
               ),);
             },
             child: Text('Поступления'),
-          ),
-        ),
-        Padding(
-          padding: EdgeInsetsDirectional.fromSTEB(10, 10, 10, 10),
-          child: TextButton(
-            onPressed: () {
-              func;
-              print('Поступления');
-            },
-            child: Text('ТЕСТ'),
           ),
         ),
       ],
