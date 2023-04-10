@@ -90,52 +90,44 @@ class Supply {
         count: json[SupplyFields.count] as int,
         pricePerPos: json[SupplyFields.pricePerPos] as int,
       );
-  static const String selectDBQuery =
-      '''select Supply.id, Supply.date, Supply.supplier, TechType.type_name, 
-      Supply.model, Supply.count, Supply.price_per_pos 
-      from Supply 
-      INNER JOIN TechType on TechType.id = Supply.tech_type''';
 
-  static String insertDBQuery(Supply data) {
+  static String updateDatabaseQuery (Supply supply){
+    return ''' update $supplyTableName
+    set
+	    ${SupplyFields.date} = "${supply.date}",
+	    ${SupplyFields.supplier} = "${supply.supplier}",
+	    tech_type = "${supply.techType}",
+	    ${SupplyFields.model} = "${supply.model}",
+	    ${SupplyFields.count} = "${supply.count}",
+	    ${SupplyFields.pricePerPos} = "${supply.pricePerPos}"
+	  where ${SupplyFields.id} = ${supply.id}
+  ''';
+  }
+  static String removeDatabaseQuery(Supply supply){
+    return '''
+      delete from $supplyTableName
+      where ${SupplyFields.id} = ${supply.id} 
+    ''';
+  }
+  static int _convertTechType(Supply supply){
     int techType = 1;
     techTypeMap.forEach((key, value) {
-      if (data.model == value) techType = key + 1;
+      if (supply.model == value) techType = key + 1;
+    });
+
+    return techType;
+  }
+  static String insertDatabaseQuery(Supply supply) {
+    int techType = 1;
+    techTypeMap.forEach((key, value) {
+      if (supply.model == value) techType = key + 1;
     });
 
     return '''
   INSERT INTO Supply (date, supplier, tech_type, model, count, price_per_pos)
-  VALUES ('${data.date}', '${data.supplier}', ${techType.toString()}, '${data.model}', 
-  ${data.count}, ${data.pricePerPos})
+  VALUES ('${supply.date}', '${supply.supplier}', ${techType.toString()}, '${supply.model}', 
+  ${supply.count}, ${supply.pricePerPos})
   ''';
-  }
-
-  static List<DataRow> generateDataRow(
-      List<Supply> dataSource, Color rowColor) {
-    List<DataRow> dataList = [];
-    int iterator = 1;
-
-    for (var element in dataSource) {
-      if (iterator.isEven) {
-        rowColor = Colors.grey.shade200;
-      } else {
-        rowColor = Colors.white;
-      }
-      dataList.add(
-          DataRow(color: MaterialStateProperty.all<Color>(rowColor), cells: [
-        DataCell(showEditIcon: true, Text('')),
-        DataCell(Text(iterator.toString())),
-        DataCell(Text(element.supplier.toString())),
-        DataCell(Text(element.techType.toString())),
-        DataCell(Text(element.model.toString())),
-        DataCell(Text(element.date.toString())),
-        DataCell(Text(element.count.toString())),
-        DataCell(Text(element.pricePerPos.toString())),
-        DataCell(Text((element.pricePerPos * element.count).toString())),
-      ]));
-
-      iterator++;
-    }
-    return dataList;
   }
 
   static List getUniqueValue(List<Supply> dataSource, String useCase) {
@@ -178,7 +170,6 @@ class Supply {
     storageList.sort();
     return storageList;
   }
-
   static List<Supply> sort(List<Supply> dataSource,
       Map<String, String> sortRule, SfRangeValues value) {
     List<Supply> exitValue = []; /*Выходной список*/
@@ -265,5 +256,128 @@ class Supply {
     }
     if (rules.isEmpty) exitValue = dataSource;
     return exitValue;
+  }
+  static AlertDialog editDialog(
+      Supply element, List<TextEditingController> tmp, BuildContext context,
+      Function()? func, Function()? func2) {
+    tmp[0].text = element.supplier!;
+    tmp[1].text = element.techType!;
+    tmp[2].text = element.model!;
+    tmp[3].text = element.date!;
+    tmp[4].text = element.count.toString();
+    tmp[5].text = element.pricePerPos.toString();
+    return AlertDialog(
+      title: const Text('Редактировать запись'),
+      content: Container(
+        height: 200,
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Column(
+              children: [
+                Row(
+                  children: [
+                    Expanded(
+                      child: Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: Column(
+                          children: [
+                            TextField(
+                              controller: tmp[0],
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                    Expanded(
+                      child: Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: Column(
+                          children: [
+                            TextField(
+                              controller: tmp[1],
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                    Expanded(
+                      child: Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: Column(
+                          children: [
+                            TextField(
+                              controller: tmp[2],
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                    Expanded(
+                      child: Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: Column(
+                          children: [
+                            TextField(
+                              controller: tmp[3],
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                    Expanded(
+                      child: Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: Column(
+                          children: [
+                            TextField(
+                              controller: tmp[4],
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                    Expanded(
+                      child: Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: Column(
+                          children: [
+                            TextField(
+                              controller: tmp[5],
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+                Padding(
+                  padding: const EdgeInsets.all(10.0),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.end,
+                    children: [
+                      MaterialButton(
+                        onPressed: func,
+                        child: const Text('Сохранить'),
+                      ),
+                      MaterialButton(
+                        onPressed: func2,
+                        child: const Text('Удалить'),
+                      ),
+                      MaterialButton(
+                        onPressed: () {
+                          Navigator.pop(context);
+                        },
+                        child: const Text('Закрыть'),
+                      )
+                    ],
+                  ),
+                ),
+              ],
+            ),
+          ],
+        ),
+      ),
+    );
   }
 }

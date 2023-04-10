@@ -61,7 +61,11 @@ class DatabaseProvider {
     var databaseFactory = databaseFactoryFfi;
     var db = await databaseFactory.openDatabase(databaseUrl);
 
-    databaseData = await db.rawQuery(Supply.selectDBQuery);
+    databaseData = await db.rawQuery('''
+    select Supply.id, Supply.date, Supply.supplier, TechType.type_name, 
+    Supply.model, Supply.count, Supply.price_per_pos 
+    FROM Supply 
+    INNER JOIN TechType on TechType.id = Supply.tech_type''');
 
     await db.close();
 
@@ -95,8 +99,7 @@ class DatabaseProvider {
     debugPrint(techTypelist.toString());
     return techTypelist;
   }
-
-  static Future insertDataInDatabase(String sqlQuery) async {
+  static Future rawDatabaseQuery(String sqlQuery) async {
     sqfliteFfiInit();
     var databaseFactory = databaseFactoryFfi;
     var db = await databaseFactory.openDatabase(databaseUrl);

@@ -34,13 +34,76 @@ class _SupplyPageState extends State<SupplyPage> {
     'Price max': ''
   };
 
+  List<DataRow> generateDataRow(List<Supply> dataSource, Color rowColor,
+      BuildContext context) {
+    List<DataRow> dataList = [];
+    int iterator = 1;
+
+    for (var element in dataSource) {
+      if (iterator.isEven) {
+        rowColor = Colors.grey.shade200;
+      } else {
+        rowColor = Colors.white;
+      }
+      dataList.add(
+          DataRow(color: MaterialStateProperty.all<Color>(rowColor), cells: [
+            DataCell(onTap: () {
+              showDialog(
+                  context: context,
+                  builder: (context) {
+                    List<TextEditingController> tmp =
+                    List.generate(6, (index) => TextEditingController());
+                    return Supply.editDialog(element, tmp, context, () {
+                      setState(() {
+                        var tmpSupply = Supply(
+                            id: element.id,
+                            count: int.parse(tmp[4].text),
+                            pricePerPos: int.parse(tmp[5].text),
+                            model: tmp[2].text,
+                            techType: tmp[1].text,
+                            supplier: tmp[0].text,
+                            date: tmp[3].text
+                        );
+                        var index = element.id! - 1;
+                        _supplyList[index] = tmpSupply;
+                       try{
+                         DatabaseProvider.rawDatabaseQuery(
+                             Supply.updateDatabaseQuery(tmpSupply));
+                         Navigator.pop(context);
+                         ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+                           content: Text("Запись обновлена"),
+                         ));
+                       } catch (e){
+                         ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+                           content: Text("Ошибка: заполните все доступные поля"),
+                         ));
+                       }
+                      });
+                    }, () => null);
+                  });
+            }, showEditIcon: true, Text('')),
+            DataCell(Text(iterator.toString())),
+            DataCell(Text(element.supplier.toString())),
+            DataCell(Text(element.techType.toString())),
+            DataCell(Text(element.model.toString())),
+            DataCell(Text(element.date.toString())),
+            DataCell(Text(element.count.toString())),
+            DataCell(Text(element.pricePerPos.toString())),
+            DataCell(Text((element.pricePerPos * element.count).toString())),
+          ]));
+
+      iterator++;
+    }
+    return dataList;
+  }
+
   List<DataRow> getDataRow(List<Supply> dataSource,
       [Map<String, String>? sortRule]) {
     if (dataSource.isEmpty) {
       getDataFromDb();
-      return Supply.generateDataRow(dataSource, color);
+      return generateDataRow(dataSource, color, context);
     } else {
-      return Supply.generateDataRow(dataSource, color);
+      return generateDataRow(dataSource, color, context);
     }
   }
 
@@ -73,13 +136,10 @@ class _SupplyPageState extends State<SupplyPage> {
     return newSupply;
   }
 
-  final _formKey = GlobalKey<FormState>();
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        key: _formKey,
         title: const Text('SSK Resource / IncomePage'),
         actions: const [],
         centerTitle: false,
@@ -114,7 +174,7 @@ class _SupplyPageState extends State<SupplyPage> {
                                     children: [
                                       Row(
                                         mainAxisAlignment:
-                                            MainAxisAlignment.spaceEvenly,
+                                        MainAxisAlignment.spaceEvenly,
                                         children: [
                                           Text('Поставщик'),
                                           Text('Тип техники'),
@@ -138,32 +198,33 @@ class _SupplyPageState extends State<SupplyPage> {
                                           SupplyInputField(
                                               isNumeric: false,
                                               controller:
-                                                  supplierTextEditionController,
+                                              supplierTextEditionController,
                                               textHint: 'Поставщик'),
                                           Expanded(
                                             child: Padding(
                                               padding:
-                                                  const EdgeInsets.all(6.0),
+                                              const EdgeInsets.all(6.0),
                                               child: DropdownButton(
                                                 value: techTypeValue,
                                                 isExpanded: true,
                                                 focusColor:
-                                                    Colors.grey.shade200,
+                                                Colors.grey.shade200,
                                                 borderRadius:
-                                                    const BorderRadius.all(
-                                                        Radius.circular(10)),
+                                                const BorderRadius.all(
+                                                    Radius.circular(10)),
                                                 items: List<
-                                                        DropdownMenuItem<
-                                                            String>>.generate(
+                                                    DropdownMenuItem<
+                                                        String>>.generate(
                                                     Supply.techTypeMap.length,
-                                                    (index) {
-                                                  return DropdownMenuItem(
-                                                      value: Supply
-                                                          .techTypeMap[index],
-                                                      child: Text(
-                                                          Supply.techTypeMap[
+                                                        (index) {
+                                                      return DropdownMenuItem(
+                                                          value: Supply
+                                                              .techTypeMap[index],
+                                                          child: Text(
+                                                              Supply
+                                                                  .techTypeMap[
                                                               index]!));
-                                                }),
+                                                    }),
                                                 onChanged: (Object? value) {
                                                   setState(() {
                                                     techTypeValue =
@@ -176,22 +237,22 @@ class _SupplyPageState extends State<SupplyPage> {
                                           SupplyInputField(
                                               isNumeric: false,
                                               controller:
-                                                  modelTextEditionController,
+                                              modelTextEditionController,
                                               textHint: 'Модель'),
                                           SupplyInputField(
                                               isNumeric: false,
                                               controller:
-                                                  dataTextEditionController,
+                                              dataTextEditionController,
                                               textHint: 'Дата'),
                                           SupplyInputField(
                                               isNumeric: true,
                                               controller:
-                                                  countTextEditionController,
+                                              countTextEditionController,
                                               textHint: 'Количество'),
                                           SupplyInputField(
                                               isNumeric: true,
                                               controller:
-                                                  pricePerPosTextEditionController,
+                                              pricePerPosTextEditionController,
                                               textHint: 'Стоимость за шт.'),
                                           Expanded(
                                             child: TextButton(
@@ -201,23 +262,24 @@ class _SupplyPageState extends State<SupplyPage> {
                                                   _supplyList
                                                       .add(validateRecord());
                                                   DatabaseProvider
-                                                      .insertDataInDatabase(
-                                                          Supply.insertDBQuery(
-                                                              _supplyList
-                                                                  .last));
+                                                      .rawDatabaseQuery(
+                                                      Supply
+                                                          .insertDatabaseQuery(
+                                                          _supplyList
+                                                              .last));
                                                   ScaffoldMessenger.of(context)
                                                       .showSnackBar(
-                                                          const SnackBar(
-                                                    content: Text(
-                                                        "Записи добавлены"),
-                                                  ));
+                                                      const SnackBar(
+                                                        content: Text(
+                                                            "Записи добавлены"),
+                                                      ));
                                                 } catch (e) {
                                                   ScaffoldMessenger.of(context)
                                                       .showSnackBar(
-                                                          const SnackBar(
-                                                    content: Text(
-                                                        "Заполните все поля"),
-                                                  ));
+                                                      const SnackBar(
+                                                        content: Text(
+                                                            "Заполните все поля"),
+                                                      ));
                                                 }
                                               },
                                             ),
@@ -287,12 +349,15 @@ class _SupplyPageState extends State<SupplyPage> {
                     borderRadius: const BorderRadius.all(Radius.circular(10)),
                     value: sortBy['Supplier'],
                     items: List<DropdownMenuItem<String>>.generate(
-                        Supply.getUniqueValue(_supplyList, 'Supplier').length,
-                        (index) {
-                      var tmp = Supply.getUniqueValue(_supplyList, 'Supplier');
-                      return DropdownMenuItem(
-                          value: tmp[index], child: Text(tmp[index]));
-                    }),
+                        Supply
+                            .getUniqueValue(_supplyList, 'Supplier')
+                            .length,
+                            (index) {
+                          var tmp = Supply.getUniqueValue(
+                              _supplyList, 'Supplier');
+                          return DropdownMenuItem(
+                              value: tmp[index], child: Text(tmp[index]));
+                        }),
                     onChanged: (Object? value) {
                       setState(() {
                         debugPrint(value.toString());
@@ -315,12 +380,15 @@ class _SupplyPageState extends State<SupplyPage> {
                     value: sortBy['Tech type'],
                     borderRadius: const BorderRadius.all(Radius.circular(10)),
                     items: List<DropdownMenuItem<String>>.generate(
-                        Supply.getUniqueValue(_supplyList, 'Tech type').length,
-                        (index) {
-                      var tmp = Supply.getUniqueValue(_supplyList, 'Tech type');
-                      return DropdownMenuItem(
-                          value: tmp[index], child: Text(tmp[index]));
-                    }),
+                        Supply
+                            .getUniqueValue(_supplyList, 'Tech type')
+                            .length,
+                            (index) {
+                          var tmp = Supply.getUniqueValue(
+                              _supplyList, 'Tech type');
+                          return DropdownMenuItem(
+                              value: tmp[index], child: Text(tmp[index]));
+                        }),
                     onChanged: (Object? value) {
                       setState(() {
                         debugPrint(value.toString());
@@ -343,12 +411,14 @@ class _SupplyPageState extends State<SupplyPage> {
                     value: sortBy['Date'],
                     borderRadius: const BorderRadius.all(Radius.circular(10)),
                     items: List<DropdownMenuItem<String>>.generate(
-                        Supply.getUniqueValue(_supplyList, 'Date').length,
-                        (index) {
-                      var tmp = Supply.getUniqueValue(_supplyList, 'Date');
-                      return DropdownMenuItem(
-                          value: tmp[index], child: Text(tmp[index]));
-                    }),
+                        Supply
+                            .getUniqueValue(_supplyList, 'Date')
+                            .length,
+                            (index) {
+                          var tmp = Supply.getUniqueValue(_supplyList, 'Date');
+                          return DropdownMenuItem(
+                              value: tmp[index], child: Text(tmp[index]));
+                        }),
                     onChanged: (Object? value) {
                       setState(() {
                         debugPrint(value.toString());
