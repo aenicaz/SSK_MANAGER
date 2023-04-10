@@ -36,6 +36,10 @@ class InventoryTable extends StatelessWidget {
             size: ColumnSize.S,
           ),
           DataColumn2(
+            label: Text('Номер поставки'),
+            size: ColumnSize.S,
+          ),
+          DataColumn2(
             label: Text('Имя пользователся'),
             size: ColumnSize.S,
           ),

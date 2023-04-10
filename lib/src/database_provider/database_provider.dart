@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:sqflite/sqflite.dart';
 import 'package:sqflite_common_ffi/sqflite_ffi.dart';
 import 'package:ssk_manager/src/consts/ulr.dart';
 import 'package:ssk_manager/src/models/computers.dart';
@@ -7,7 +8,7 @@ import 'package:ssk_manager/src/models/supply.dart';
 import '../models/tech_type.dart';
 import '../models/user.dart';
 
-class InventoryListDatabase {
+class DatabaseProvider {
   static var databaseData = [];
 
   static Future getComputerDataFromDatabase() async {
@@ -28,7 +29,7 @@ class InventoryListDatabase {
 
       iterater++;
     }
-
+    lastInvNumber = computerList.last.invNumber!;
     return computerList;
   }
   static Future getUserDataFromDatabase() async {
@@ -60,7 +61,11 @@ class InventoryListDatabase {
     var databaseFactory = databaseFactoryFfi;
     var db = await databaseFactory.openDatabase(databaseUrl);
 
-    databaseData = await db.rawQuery(Supply.selectDBQuery);
+    databaseData = await db.rawQuery('''
+    select Supply.id, Supply.date, Supply.supplier, TechType.type_name, 
+    Supply.model, Supply.count, Supply.price_per_pos 
+    FROM Supply 
+    INNER JOIN TechType on TechType.id = Supply.tech_type''');
 
     await db.close();
 
@@ -93,5 +98,13 @@ class InventoryListDatabase {
 
     debugPrint(techTypelist.toString());
     return techTypelist;
+  }
+  static Future rawDatabaseQuery(String sqlQuery) async {
+    sqfliteFfiInit();
+    var databaseFactory = databaseFactoryFfi;
+    var db = await databaseFactory.openDatabase(databaseUrl);
+
+    db.rawQuery(sqlQuery);
+    db.close();
   }
 }

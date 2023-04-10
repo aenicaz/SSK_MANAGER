@@ -26,6 +26,10 @@ class SupplyTable extends StatelessWidget {
             size: ColumnSize.S,
           ),
           DataColumn2(
+            label: Text('Модель'),
+            size: ColumnSize.S,
+          ),
+          DataColumn2(
             label: Text('Дата'),
             size: ColumnSize.S,
           ),
