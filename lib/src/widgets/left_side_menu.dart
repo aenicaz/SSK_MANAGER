@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:ssk_manager/src/pages/arm_page.dart';
 import 'package:ssk_manager/src/pages/inventory_page.dart';
 import 'package:ssk_manager/src/pages/supply_page.dart';
 import 'package:ssk_manager/src/pages/user_page.dart';
@@ -21,9 +22,12 @@ class LeftSideMenu extends StatelessWidget {
           padding: const EdgeInsetsDirectional.fromSTEB(10, 10, 10, 10),
           child: TextButton(
             onPressed: () {
-              Navigator.pushReplacement(context,  MaterialPageRoute<void>(
-                builder: (BuildContext context) => const InventoryPage(),
-              ),);
+              Navigator.pushReplacement(
+                context,
+                MaterialPageRoute<void>(
+                  builder: (BuildContext context) => const InventoryPage(),
+                ),
+              );
             },
             child: Text('Инвентарная ведомость'),
           ),
@@ -33,8 +37,11 @@ class LeftSideMenu extends StatelessWidget {
           child: TextButton(
             onPressed: () {
               //TODO: implement ARM view
-              Navigator.pushReplacement(context,  MaterialPageRoute<void>(
-                builder: (BuildContext context) => const InventoryPage(),),
+              Navigator.pushReplacement(
+                context,
+                MaterialPageRoute<void>(
+                  builder: (BuildContext context) => const InventoryPage(),
+                ),
               );
             },
             child: Text('Карточки учёта'),
@@ -44,9 +51,11 @@ class LeftSideMenu extends StatelessWidget {
           padding: const EdgeInsetsDirectional.fromSTEB(10, 10, 10, 10),
           child: TextButton(
             onPressed: () {
-              //TODO: implement user page view
-              Navigator.pushReplacement(context,  MaterialPageRoute<void>(
-                builder: (BuildContext context) => const UserPage(),),
+              Navigator.pushReplacement(
+                context,
+                MaterialPageRoute<void>(
+                  builder: (BuildContext context) => const UserPage(),
+                ),
               );
             },
             child: Text('Пользователи'),
@@ -56,11 +65,28 @@ class LeftSideMenu extends StatelessWidget {
           padding: EdgeInsetsDirectional.fromSTEB(10, 10, 10, 10),
           child: TextButton(
             onPressed: () {
-              Navigator.pushReplacement(context,  MaterialPageRoute<void>(
-                builder: (BuildContext context) => const SupplyPage(),
-              ),);
+              Navigator.pushReplacement(
+                context,
+                MaterialPageRoute<void>(
+                  builder: (BuildContext context) => const SupplyPage(),
+                ),
+              );
             },
             child: Text('Поступления'),
+          ),
+        ),
+        Padding(
+          padding: EdgeInsetsDirectional.fromSTEB(10, 10, 10, 10),
+          child: TextButton(
+            onPressed: () {
+              Navigator.pushReplacement(
+                context,
+                MaterialPageRoute<void>(
+                  builder: (BuildContext context) => const ArmPage(),
+                ),
+              );
+            },
+            child: Text('АРМ'),
           ),
         ),
       ],
