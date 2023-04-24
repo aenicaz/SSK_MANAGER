@@ -29,6 +29,7 @@ class DatabaseProvider {
 
       iterater++;
     }
+
     lastInvNumber = computerList.last.invNumber!;
     return computerList;
   }

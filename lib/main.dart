@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:ssk_manager/src/pages/inventory_page.dart';
 import 'package:ssk_manager/src/pages/supply_page.dart';
 
-
 void main() async {
   runApp(const MyApp());
 }
@@ -19,7 +18,6 @@ class MyApp extends StatelessWidget {
       initialRoute: '/',
       routes: {
         '/': (context) => const InventoryPage(),
-        '/supplyPage' : (context) => const SupplyPage(),
       },
     );
   }

@@ -82,7 +82,13 @@ class _SupplyPageState extends State<SupplyPage> {
                       ));
                     }
                   });
-                }, () => null);
+                }, () {
+                  setState(() {
+                    _supplyList.remove(element);
+                    DatabaseProvider.rawDatabaseQuery(
+                        Supply.removeDatabaseQuery(element));
+                  });
+                });
               });
         }, showEditIcon: true, Text('')),
         DataCell(Text(iterator.toString())),
@@ -219,165 +225,128 @@ class _SupplyPageState extends State<SupplyPage> {
                                           IconButton(
                                             icon: const Icon(Icons.add),
                                             onPressed: () {
-                                              setState(() {
-                                                inputRows.add(
-                                                  Row(
-                                                    children: [
-                                                      SupplyInputField(
-                                                          isNumeric: false,
-                                                          controller:
-                                                              supplierTextEditionController,
-                                                          textHint:
-                                                              'Поставщик'),
-                                                      Expanded(
-                                                        child: Padding(
-                                                          padding:
-                                                              const EdgeInsets
-                                                                  .all(6.0),
-                                                          child: DropdownButton(
-                                                            value:
-                                                                techTypeValue,
-                                                            isExpanded: true,
-                                                            focusColor: Colors
-                                                                .grey.shade200,
-                                                            borderRadius:
-                                                                const BorderRadius
-                                                                        .all(
-                                                                    Radius
-                                                                        .circular(
-                                                                            10)),
-                                                            items: List<
-                                                                    DropdownMenuItem<
-                                                                        String>>.generate(
-                                                                Supply
-                                                                    .techTypeMap
-                                                                    .length,
-                                                                (index) {
-                                                              return DropdownMenuItem(
-                                                                  value: Supply
-                                                                          .techTypeMap[
-                                                                      index],
-                                                                  child: Text(Supply
-                                                                          .techTypeMap[
-                                                                      index]!));
-                                                            }),
-                                                            onChanged: (Object?
-                                                                value) {
-                                                              setState(() {
-                                                                techTypeValue =
-                                                                    value
-                                                                        .toString();
-                                                              });
-                                                            },
-                                                          ),
-                                                        ),
-                                                      ),
-                                                      SupplyInputField(
-                                                          isNumeric: false,
-                                                          controller:
-                                                              modelTextEditionController,
-                                                          textHint: 'Модель'),
-                                                      SupplyInputField(
-                                                          isNumeric: false,
-                                                          controller:
-                                                              dataTextEditionController,
-                                                          textHint: 'Дата'),
-                                                      SupplyInputField(
-                                                          isNumeric: true,
-                                                          controller:
-                                                              countTextEditionController,
-                                                          textHint:
-                                                              'Количество'),
-                                                      SupplyInputField(
-                                                          isNumeric: true,
-                                                          controller:
-                                                              pricePerPosTextEditionController,
-                                                          textHint:
-                                                              'Стоимость за шт.'),
-                                                      Expanded(
-                                                        child: TextButton(
-                                                          child: const Text(
-                                                              'Сохранить'),
-                                                          onPressed: () async {
-                                                            try {
-                                                              var tmpRecord =
-                                                                  validateRecord();
-                                                              for (var i = 0;
-                                                                  i <
-                                                                      tmpRecord
-                                                                          .count;
-                                                                  i++) {
-                                                                var tmpComputer = Computer(
-                                                                    invNumber:
-                                                                        lastInvNumber,
-                                                                    model: tmpRecord
-                                                                        .model,
-                                                                    supplyId:
-                                                                        tmpRecord
-                                                                            .id
-                                                                            .toString(),
-                                                                    cleanDate:
-                                                                        tmpRecord
-                                                                            .date);
-                                                                lastInvNumber =
-                                                                    (int.parse(lastInvNumber) +
-                                                                            1)
-                                                                        .toString();
-                                                                await DatabaseProvider
-                                                                    .rawDatabaseQuery(
-                                                                        Computer.insertDatabaseQuery(
-                                                                            tmpComputer));
-                                                              }
-                                                              _supplyList.add(
-                                                                  tmpRecord);
-                                                              await DatabaseProvider
-                                                                  .rawDatabaseQuery(
-                                                                      Supply.insertDatabaseQuery(
-                                                                          _supplyList
-                                                                              .last));
-                                                              ScaffoldMessenger
-                                                                      .of(
-                                                                          context)
-                                                                  .showSnackBar(
-                                                                      const SnackBar(
-                                                                content: Text(
-                                                                    "Записи добавлены"),
-                                                              ));
-                                                            } catch (e) {
-                                                              ScaffoldMessenger
-                                                                      .of(
-                                                                          context)
-                                                                  .showSnackBar(
-                                                                      const SnackBar(
-                                                                content: Text(
-                                                                    "Заполните все поля"),
-                                                              ));
-                                                            }
-                                                          },
-                                                        ),
-                                                      ),
-                                                    ],
-                                                  ),
-                                                );
-                                              });
+                                              //TODO: implement ADD logic
                                             },
                                             splashRadius: 25,
                                           ),
                                           IconButton(
                                             icon: const Icon(Icons.remove),
                                             onPressed: () {
-                                              setState(() {
-                                                inputRows
-                                                    .remove(inputRows.last);
-                                              });
+                                              //TODO: implement REMOVE logic
                                             },
                                             splashRadius: 25,
                                           ),
                                         ],
                                       ),
                                       Divider(thickness: 2),
-                                      Column(
-                                        children: inputRows,
+                                      Row(
+                                        children: [
+                                          SupplyInputField(
+                                              isNumeric: false,
+                                              controller:
+                                                  supplierTextEditionController,
+                                              textHint: 'Поставщик'),
+                                          Expanded(
+                                            child: Padding(
+                                              padding:
+                                                  const EdgeInsets.all(6.0),
+                                              child: DropdownButton(
+                                                value: techTypeValue,
+                                                isExpanded: true,
+                                                focusColor:
+                                                    Colors.grey.shade200,
+                                                borderRadius:
+                                                    const BorderRadius.all(
+                                                        Radius.circular(10)),
+                                                items: List<
+                                                        DropdownMenuItem<
+                                                            String>>.generate(
+                                                    Supply.techTypeMap.length,
+                                                    (index) {
+                                                  return DropdownMenuItem(
+                                                      value: Supply
+                                                          .techTypeMap[index],
+                                                      child: Text(
+                                                          Supply.techTypeMap[
+                                                              index]!));
+                                                }),
+                                                onChanged: (Object? value) {
+                                                  setState(() {
+                                                    techTypeValue =
+                                                        value.toString();
+                                                  });
+                                                },
+                                              ),
+                                            ),
+                                          ),
+                                          SupplyInputField(
+                                              isNumeric: false,
+                                              controller:
+                                                  modelTextEditionController,
+                                              textHint: 'Модель'),
+                                          SupplyInputField(
+                                              isNumeric: false,
+                                              controller:
+                                                  dataTextEditionController,
+                                              textHint: 'Дата'),
+                                          SupplyInputField(
+                                              isNumeric: true,
+                                              controller:
+                                                  countTextEditionController,
+                                              textHint: 'Количество'),
+                                          SupplyInputField(
+                                              isNumeric: true,
+                                              controller:
+                                                  pricePerPosTextEditionController,
+                                              textHint: 'Стоимость за шт.'),
+                                          TextButton(
+                                              child: const Text('Сохранить'),
+                                              onPressed: () async {
+                                                try {
+                                                  var tmpRecord =
+                                                      validateRecord();
+                                                  for (var i = 0;
+                                                      i < tmpRecord.count;
+                                                      i++) {
+                                                    var tmpComputer = Computer(
+                                                        invNumber:
+                                                            lastInvNumber,
+                                                        model: tmpRecord.model,
+                                                        supplyId: tmpRecord.id
+                                                            .toString(),
+                                                        cleanDate:
+                                                            tmpRecord.date);
+                                                    lastInvNumber = (int.parse(
+                                                                lastInvNumber) +
+                                                            1)
+                                                        .toString();
+                                                    await DatabaseProvider
+                                                        .rawDatabaseQuery(Computer
+                                                            .insertDatabaseQuery(
+                                                                tmpComputer));
+                                                  }
+                                                  _supplyList.add(tmpRecord);
+                                                  await DatabaseProvider
+                                                      .rawDatabaseQuery(Supply
+                                                          .insertDatabaseQuery(
+                                                              _supplyList
+                                                                  .last));
+                                                  ScaffoldMessenger.of(context)
+                                                      .showSnackBar(
+                                                          const SnackBar(
+                                                    content: Text(
+                                                        "Записи добавлены"),
+                                                  ));
+                                                } catch (e) {
+                                                  ScaffoldMessenger.of(context)
+                                                      .showSnackBar(
+                                                          const SnackBar(
+                                                    content: Text(
+                                                        "Заполните все поля"),
+                                                  ));
+                                                }
+                                              }),
+                                        ],
                                       ),
                                     ],
                                   );

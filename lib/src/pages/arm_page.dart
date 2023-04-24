@@ -40,44 +40,7 @@ class _ArmPageState extends State<ArmPage> {
 
       dataList
           .add(DataRow(color: MaterialStateProperty.all<Color>(color), cells: [
-        DataCell(
-            /*onTap: () {
-          showDialog(
-            context: context,
-            builder: (context) {
-              List<TextEditingController> tmp =
-                  List.generate(10, (index) => TextEditingController());
-              return Arm.editDialog(element, tmp, context, () {
-                try {
-                  setState(() {
-                    var tmpArm = Arm(
-                        name: tmp[0].text,
-                        status: tmp[1].text,
-                        jobTitle: tmp[2].text);
-                    var index = element.id! - 1;
-                    _armList[index] = tmpArm;
-
-                    DatabaseProvider.rawDatabaseQuery(
-                        Arm.updateDatabaseQuery(tmpArm));
-                    Navigator.pop(context);
-                  });
-                } catch (e) {
-                  ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-                    content: Text("Ошибка: заполните все доступные поля"),
-                  ));
-                }
-              }, () {
-                setState(() {
-                  _armList.remove(element);
-                  DatabaseProvider.rawDatabaseQuery(
-                      Arm.removeDatabaseQuery(element));
-                });
-              });
-            },
-          );
-        },*/
-            showEditIcon: true,
-            Text('')),
+        DataCell(showEditIcon: true, Text('')),
         DataCell(Text(element.id.toString())),
         DataCell(Text(element.armNumber.toString())),
         DataCell(Text(element.armModel.toString())),

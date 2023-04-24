@@ -43,7 +43,7 @@ class User {
     };
   }
 
-  static String updateDatabaseQuery (User user){
+  static String updateDatabaseQuery(User user) {
     return ''' update $userTableName
     set
 	    ${UserFields.name} = "${user.name}",
@@ -52,6 +52,7 @@ class User {
 	  where ${UserFields.id} = ${user.id}
   ''';
   }
+
   static String insertDatabaseQuery(User user) {
     return '''
   INSERT INTO $userTableName (
@@ -66,6 +67,7 @@ class User {
   )
   ''';
   }
+
   static String removeDatabaseQuery(User user) {
     return '''
       delete from $userTableName
@@ -86,9 +88,7 @@ class User {
       status: json[UserFields.status] as String,
       jobTitle: json[UserFields.jobTitle] as String);
 
-
-  static List<User> sort(
-      List<User> dataSource, Map<String, String> sortRule) {
+  static List<User> sort(List<User> dataSource, Map<String, String> sortRule) {
     List<User> exitValue = []; /*Выходной список*/
     List<String> rules = []; /*Генерируемыей из Map список фильтров*/
     /*Тут конвертится Map в List*/
@@ -97,8 +97,7 @@ class User {
     }
     if (sortRule['Name']!.isNotEmpty && exitValue.isEmpty) {
       for (var element in dataSource) {
-        if (element.name!
-            .startsWith(sortRule['Name'].toString(), 0)) {
+        if (element.name!.startsWith(sortRule['Name'].toString(), 0)) {
           exitValue.add(element);
         }
       }
@@ -106,8 +105,7 @@ class User {
       List<User> newSortedList = [];
 
       for (var element in exitValue) {
-        if (element.name!
-            .startsWith(sortRule['Name'].toString(), 0)) {
+        if (element.name!.startsWith(sortRule['Name'].toString(), 0)) {
           newSortedList.add(element);
         }
       }
@@ -176,9 +174,9 @@ class User {
     storageList.sort();
     return storageList;
   }
+
   static AlertDialog addDialog(
-      List<TextEditingController> tmp, BuildContext context,
-      Function()? func) {
+      List<TextEditingController> tmp, BuildContext context, Function()? func) {
     return AlertDialog(
       title: const Text('Редактировать запись'),
       content: Container(
@@ -217,9 +215,8 @@ class User {
                               style: const TextStyle(
                                 fontSize: 12,
                               ),
-                              decoration: const InputDecoration(
-                                  hintText: 'Статус'
-                              ),
+                              decoration:
+                                  const InputDecoration(hintText: 'Статус'),
                               controller: tmp[1],
                             ),
                           ],
@@ -235,9 +232,8 @@ class User {
                               style: const TextStyle(
                                 fontSize: 12,
                               ),
-                              decoration: const InputDecoration(
-                                  hintText: 'Должность'
-                              ),
+                              decoration:
+                                  const InputDecoration(hintText: 'Должность'),
                               controller: tmp[2],
                             ),
                           ],
@@ -271,9 +267,9 @@ class User {
       ),
     );
   }
-  static AlertDialog editDialog(
-      User element, List<TextEditingController> tmp, BuildContext context,
-      Function()? func, Function()? func2) {
+
+  static AlertDialog editDialog(User element, List<TextEditingController> tmp,
+      BuildContext context, Function()? func, Function()? func2) {
     tmp[0].text = element.name!;
     tmp[1].text = element.status!;
     tmp[2].text = element.jobTitle!;
@@ -356,5 +352,4 @@ class User {
       ),
     );
   }
-
 }
