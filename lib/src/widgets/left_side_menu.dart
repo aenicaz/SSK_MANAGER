@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:ssk_manager/src/pages/arm_page.dart';
+import 'package:ssk_manager/src/pages/graphic_page.dart';
 import 'package:ssk_manager/src/pages/inventory_page.dart';
 import 'package:ssk_manager/src/pages/supply_page.dart';
 import 'package:ssk_manager/src/pages/user_page.dart';
@@ -30,21 +31,6 @@ class LeftSideMenu extends StatelessWidget {
               );
             },
             child: Text('Инвентарная ведомость'),
-          ),
-        ),
-        Padding(
-          padding: const EdgeInsetsDirectional.fromSTEB(10, 10, 10, 10),
-          child: TextButton(
-            onPressed: () {
-              //TODO: implement ARM view
-              Navigator.pushReplacement(
-                context,
-                MaterialPageRoute<void>(
-                  builder: (BuildContext context) => const InventoryPage(),
-                ),
-              );
-            },
-            child: Text('Карточки учёта'),
           ),
         ),
         Padding(
@@ -87,6 +73,20 @@ class LeftSideMenu extends StatelessWidget {
               );
             },
             child: Text('АРМ'),
+          ),
+        ),
+        Padding(
+          padding: EdgeInsetsDirectional.fromSTEB(10, 10, 10, 10),
+          child: TextButton(
+            onPressed: () {
+              Navigator.pushReplacement(
+                context,
+                MaterialPageRoute<void>(
+                  builder: (BuildContext context) => const GraphicPage(),
+                ),
+              );
+            },
+            child: Text('Аналитика'),
           ),
         ),
       ],
