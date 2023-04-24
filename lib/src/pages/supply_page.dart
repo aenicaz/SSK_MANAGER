@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:ssk_manager/src/consts/ulr.dart';
 import 'package:ssk_manager/src/models/supply.dart';
 import 'package:ssk_manager/src/widgets/supply_input_field.dart';
 import 'package:syncfusion_flutter_sliders/sliders.dart';
 import '../database_provider/database_provider.dart';
+import '../models/computers.dart';
 import '../widgets/tables/supply_table.dart';
 import '../widgets/left_side_menu.dart';
 
@@ -34,8 +36,8 @@ class _SupplyPageState extends State<SupplyPage> {
     'Price max': ''
   };
 
-  List<DataRow> generateDataRow(List<Supply> dataSource, Color rowColor,
-      BuildContext context) {
+  List<DataRow> generateDataRow(
+      List<Supply> dataSource, Color rowColor, BuildContext context) {
     List<DataRow> dataList = [];
     int iterator = 1;
 
@@ -47,50 +49,49 @@ class _SupplyPageState extends State<SupplyPage> {
       }
       dataList.add(
           DataRow(color: MaterialStateProperty.all<Color>(rowColor), cells: [
-            DataCell(onTap: () {
-              showDialog(
-                  context: context,
-                  builder: (context) {
-                    List<TextEditingController> tmp =
+        DataCell(onTap: () {
+          showDialog(
+              context: context,
+              builder: (context) {
+                List<TextEditingController> tmp =
                     List.generate(6, (index) => TextEditingController());
-                    return Supply.editDialog(element, tmp, context, () {
-                      setState(() {
-                        var tmpSupply = Supply(
-                            id: element.id,
-                            count: int.parse(tmp[4].text),
-                            pricePerPos: int.parse(tmp[5].text),
-                            model: tmp[2].text,
-                            techType: tmp[1].text,
-                            supplier: tmp[0].text,
-                            date: tmp[3].text
-                        );
-                        var index = element.id! - 1;
-                        _supplyList[index] = tmpSupply;
-                       try{
-                         DatabaseProvider.rawDatabaseQuery(
-                             Supply.updateDatabaseQuery(tmpSupply));
-                         Navigator.pop(context);
-                         ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-                           content: Text("Запись обновлена"),
-                         ));
-                       } catch (e){
-                         ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-                           content: Text("Ошибка: заполните все доступные поля"),
-                         ));
-                       }
-                      });
-                    }, () => null);
+                return Supply.editDialog(element, tmp, context, () {
+                  setState(() {
+                    var tmpSupply = Supply(
+                        id: element.id,
+                        count: int.parse(tmp[4].text),
+                        pricePerPos: int.parse(tmp[5].text),
+                        model: tmp[2].text,
+                        techType: tmp[1].text,
+                        supplier: tmp[0].text,
+                        date: tmp[3].text);
+                    var index = element.id - 1;
+                    _supplyList[index] = tmpSupply;
+                    try {
+                      DatabaseProvider.rawDatabaseQuery(
+                          Supply.updateDatabaseQuery(tmpSupply));
+                      Navigator.pop(context);
+                      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+                        content: Text("Запись обновлена"),
+                      ));
+                    } catch (e) {
+                      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+                        content: Text("Ошибка: заполните все доступные поля"),
+                      ));
+                    }
                   });
-            }, showEditIcon: true, Text('')),
-            DataCell(Text(iterator.toString())),
-            DataCell(Text(element.supplier.toString())),
-            DataCell(Text(element.techType.toString())),
-            DataCell(Text(element.model.toString())),
-            DataCell(Text(element.date.toString())),
-            DataCell(Text(element.count.toString())),
-            DataCell(Text(element.pricePerPos.toString())),
-            DataCell(Text((element.pricePerPos * element.count).toString())),
-          ]));
+                }, () => null);
+              });
+        }, showEditIcon: true, Text('')),
+        DataCell(Text(iterator.toString())),
+        DataCell(Text(element.supplier.toString())),
+        DataCell(Text(element.techType.toString())),
+        DataCell(Text(element.model.toString())),
+        DataCell(Text(element.date.toString())),
+        DataCell(Text(element.count.toString())),
+        DataCell(Text(element.pricePerPos.toString())),
+        DataCell(Text((element.pricePerPos * element.count).toString())),
+      ]));
 
       iterator++;
     }
@@ -161,136 +162,11 @@ class _SupplyPageState extends State<SupplyPage> {
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
                         TabBar(labelColor: Colors.black87, tabs: [
-                          Tab(text: 'Создать поступление'),
-                          Tab(text: 'Таблица поступлений')
+                          Tab(text: 'Таблица поступлений'),
+                          Tab(text: 'Создать поступление')
                         ]),
                         Expanded(
                           child: TabBarView(children: [
-                            FutureBuilder(
-                              future: null,
-                              builder: (context, snapshot) {
-                                if (true) {
-                                  return Column(
-                                    children: [
-                                      Row(
-                                        mainAxisAlignment:
-                                        MainAxisAlignment.spaceEvenly,
-                                        children: [
-                                          Text('Поставщик'),
-                                          Text('Тип техники'),
-                                          Text('Модель'),
-                                          Text('Дата'),
-                                          Text('Количество'),
-                                          Text('Стоимость за шт., руб.'),
-                                          Switch(
-                                            value: flag,
-                                            onChanged: (value) {
-                                              setState(() {
-                                                flag = !flag;
-                                              });
-                                            },
-                                          )
-                                        ],
-                                      ),
-                                      Divider(thickness: 2),
-                                      Row(
-                                        children: [
-                                          SupplyInputField(
-                                              isNumeric: false,
-                                              controller:
-                                              supplierTextEditionController,
-                                              textHint: 'Поставщик'),
-                                          Expanded(
-                                            child: Padding(
-                                              padding:
-                                              const EdgeInsets.all(6.0),
-                                              child: DropdownButton(
-                                                value: techTypeValue,
-                                                isExpanded: true,
-                                                focusColor:
-                                                Colors.grey.shade200,
-                                                borderRadius:
-                                                const BorderRadius.all(
-                                                    Radius.circular(10)),
-                                                items: List<
-                                                    DropdownMenuItem<
-                                                        String>>.generate(
-                                                    Supply.techTypeMap.length,
-                                                        (index) {
-                                                      return DropdownMenuItem(
-                                                          value: Supply
-                                                              .techTypeMap[index],
-                                                          child: Text(
-                                                              Supply
-                                                                  .techTypeMap[
-                                                              index]!));
-                                                    }),
-                                                onChanged: (Object? value) {
-                                                  setState(() {
-                                                    techTypeValue =
-                                                        value.toString();
-                                                  });
-                                                },
-                                              ),
-                                            ),
-                                          ),
-                                          SupplyInputField(
-                                              isNumeric: false,
-                                              controller:
-                                              modelTextEditionController,
-                                              textHint: 'Модель'),
-                                          SupplyInputField(
-                                              isNumeric: false,
-                                              controller:
-                                              dataTextEditionController,
-                                              textHint: 'Дата'),
-                                          SupplyInputField(
-                                              isNumeric: true,
-                                              controller:
-                                              countTextEditionController,
-                                              textHint: 'Количество'),
-                                          SupplyInputField(
-                                              isNumeric: true,
-                                              controller:
-                                              pricePerPosTextEditionController,
-                                              textHint: 'Стоимость за шт.'),
-                                          Expanded(
-                                            child: TextButton(
-                                              child: const Text('Сохранить'),
-                                              onPressed: () {
-                                                try {
-                                                  _supplyList
-                                                      .add(validateRecord());
-                                                  DatabaseProvider
-                                                      .rawDatabaseQuery(
-                                                      Supply
-                                                          .insertDatabaseQuery(
-                                                          _supplyList
-                                                              .last));
-                                                  ScaffoldMessenger.of(context)
-                                                      .showSnackBar(
-                                                      const SnackBar(
-                                                        content: Text(
-                                                            "Записи добавлены"),
-                                                      ));
-                                                } catch (e) {
-                                                  ScaffoldMessenger.of(context)
-                                                      .showSnackBar(
-                                                      const SnackBar(
-                                                        content: Text(
-                                                            "Заполните все поля"),
-                                                      ));
-                                                }
-                                              },
-                                            ),
-                                          ),
-                                        ],
-                                      ),
-                                    ],
-                                  );
-                                }
-                              },
-                            ),
                             FutureBuilder(
                               future: getDataFromDb(),
                               builder: (context, snapshot) {
@@ -310,6 +186,155 @@ class _SupplyPageState extends State<SupplyPage> {
                                     child: CircularProgressIndicator(
                                       color: Colors.blue.shade700,
                                     ),
+                                  );
+                                }
+                              },
+                            ),
+                            FutureBuilder(
+                              future: null,
+                              builder: (context, snapshot) {
+                                if (true) {
+                                  return Column(
+                                    children: [
+                                      Row(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.spaceEvenly,
+                                        children: [
+                                          Text('Поставщик'),
+                                          Text('Тип техники'),
+                                          Text('Модель'),
+                                          Text('Дата'),
+                                          Text('Количество'),
+                                          Text('Стоимость за шт., руб.'),
+                                          Switch(
+                                            value: flag,
+                                            onChanged: (value) {
+                                              setState(() {
+                                                flag = !flag;
+                                              });
+                                            },
+                                          ),
+                                          IconButton(
+                                            icon: const Icon(Icons.add),
+                                            onPressed: () {},
+                                            splashRadius: 25,
+                                          ),
+                                        ],
+                                      ),
+                                      Divider(thickness: 2),
+                                      Row(
+                                        children: [
+                                          SupplyInputField(
+                                              isNumeric: false,
+                                              controller:
+                                                  supplierTextEditionController,
+                                              textHint: 'Поставщик'),
+                                          Expanded(
+                                            child: Padding(
+                                              padding:
+                                                  const EdgeInsets.all(6.0),
+                                              child: DropdownButton(
+                                                value: techTypeValue,
+                                                isExpanded: true,
+                                                focusColor:
+                                                    Colors.grey.shade200,
+                                                borderRadius:
+                                                    const BorderRadius.all(
+                                                        Radius.circular(10)),
+                                                items: List<
+                                                        DropdownMenuItem<
+                                                            String>>.generate(
+                                                    Supply.techTypeMap.length,
+                                                    (index) {
+                                                  return DropdownMenuItem(
+                                                      value: Supply
+                                                          .techTypeMap[index],
+                                                      child: Text(
+                                                          Supply.techTypeMap[
+                                                              index]!));
+                                                }),
+                                                onChanged: (Object? value) {
+                                                  setState(() {
+                                                    techTypeValue =
+                                                        value.toString();
+                                                  });
+                                                },
+                                              ),
+                                            ),
+                                          ),
+                                          SupplyInputField(
+                                              isNumeric: false,
+                                              controller:
+                                                  modelTextEditionController,
+                                              textHint: 'Модель'),
+                                          SupplyInputField(
+                                              isNumeric: false,
+                                              controller:
+                                                  dataTextEditionController,
+                                              textHint: 'Дата'),
+                                          SupplyInputField(
+                                              isNumeric: true,
+                                              controller:
+                                                  countTextEditionController,
+                                              textHint: 'Количество'),
+                                          SupplyInputField(
+                                              isNumeric: true,
+                                              controller:
+                                                  pricePerPosTextEditionController,
+                                              textHint: 'Стоимость за шт.'),
+                                          Expanded(
+                                            child: TextButton(
+                                              child: const Text('Сохранить'),
+                                              onPressed: () async {
+                                                try {
+                                                  var tmpRecord =
+                                                      validateRecord();
+                                                  for (var i = 0;
+                                                      i < tmpRecord.count;
+                                                      i++) {
+                                                    var tmpComputer = Computer(
+                                                        invNumber:
+                                                            lastInvNumber,
+                                                        model: tmpRecord.model,
+                                                        supplyId: tmpRecord.id
+                                                            .toString(),
+                                                        cleanDate:
+                                                            tmpRecord.date);
+                                                    lastInvNumber = (int.parse(
+                                                                lastInvNumber) +
+                                                            1)
+                                                        .toString();
+                                                    await DatabaseProvider
+                                                        .rawDatabaseQuery(Computer
+                                                            .insertDatabaseQuery(
+                                                                tmpComputer));
+                                                  }
+                                                  _supplyList.add(tmpRecord);
+                                                  await DatabaseProvider
+                                                      .rawDatabaseQuery(Supply
+                                                          .insertDatabaseQuery(
+                                                              _supplyList
+                                                                  .last));
+                                                  ScaffoldMessenger.of(context)
+                                                      .showSnackBar(
+                                                          const SnackBar(
+                                                    content: Text(
+                                                        "Записи добавлены"),
+                                                  ));
+                                                } catch (e) {
+                                                  ScaffoldMessenger.of(context)
+                                                      .showSnackBar(
+                                                          const SnackBar(
+                                                    content: Text(
+                                                        "Заполните все поля"),
+                                                  ));
+                                                }
+                                              },
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                    ],
                                   );
                                 }
                               },
@@ -349,15 +374,12 @@ class _SupplyPageState extends State<SupplyPage> {
                     borderRadius: const BorderRadius.all(Radius.circular(10)),
                     value: sortBy['Supplier'],
                     items: List<DropdownMenuItem<String>>.generate(
-                        Supply
-                            .getUniqueValue(_supplyList, 'Supplier')
-                            .length,
-                            (index) {
-                          var tmp = Supply.getUniqueValue(
-                              _supplyList, 'Supplier');
-                          return DropdownMenuItem(
-                              value: tmp[index], child: Text(tmp[index]));
-                        }),
+                        Supply.getUniqueValue(_supplyList, 'Supplier').length,
+                        (index) {
+                      var tmp = Supply.getUniqueValue(_supplyList, 'Supplier');
+                      return DropdownMenuItem(
+                          value: tmp[index], child: Text(tmp[index]));
+                    }),
                     onChanged: (Object? value) {
                       setState(() {
                         debugPrint(value.toString());
@@ -380,15 +402,12 @@ class _SupplyPageState extends State<SupplyPage> {
                     value: sortBy['Tech type'],
                     borderRadius: const BorderRadius.all(Radius.circular(10)),
                     items: List<DropdownMenuItem<String>>.generate(
-                        Supply
-                            .getUniqueValue(_supplyList, 'Tech type')
-                            .length,
-                            (index) {
-                          var tmp = Supply.getUniqueValue(
-                              _supplyList, 'Tech type');
-                          return DropdownMenuItem(
-                              value: tmp[index], child: Text(tmp[index]));
-                        }),
+                        Supply.getUniqueValue(_supplyList, 'Tech type').length,
+                        (index) {
+                      var tmp = Supply.getUniqueValue(_supplyList, 'Tech type');
+                      return DropdownMenuItem(
+                          value: tmp[index], child: Text(tmp[index]));
+                    }),
                     onChanged: (Object? value) {
                       setState(() {
                         debugPrint(value.toString());
@@ -411,14 +430,12 @@ class _SupplyPageState extends State<SupplyPage> {
                     value: sortBy['Date'],
                     borderRadius: const BorderRadius.all(Radius.circular(10)),
                     items: List<DropdownMenuItem<String>>.generate(
-                        Supply
-                            .getUniqueValue(_supplyList, 'Date')
-                            .length,
-                            (index) {
-                          var tmp = Supply.getUniqueValue(_supplyList, 'Date');
-                          return DropdownMenuItem(
-                              value: tmp[index], child: Text(tmp[index]));
-                        }),
+                        Supply.getUniqueValue(_supplyList, 'Date').length,
+                        (index) {
+                      var tmp = Supply.getUniqueValue(_supplyList, 'Date');
+                      return DropdownMenuItem(
+                          value: tmp[index], child: Text(tmp[index]));
+                    }),
                     onChanged: (Object? value) {
                       setState(() {
                         debugPrint(value.toString());

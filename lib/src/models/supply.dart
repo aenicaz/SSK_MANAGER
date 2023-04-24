@@ -91,7 +91,7 @@ class Supply {
         pricePerPos: json[SupplyFields.pricePerPos] as int,
       );
 
-  static String updateDatabaseQuery (Supply supply){
+  static String updateDatabaseQuery(Supply supply) {
     return ''' update $supplyTableName
     set
 	    ${SupplyFields.date} = "${supply.date}",
@@ -103,26 +103,19 @@ class Supply {
 	  where ${SupplyFields.id} = ${supply.id}
   ''';
   }
-  static String removeDatabaseQuery(Supply supply){
+
+  static String removeDatabaseQuery(Supply supply) {
     return '''
       delete from $supplyTableName
       where ${SupplyFields.id} = ${supply.id} 
     ''';
   }
-  static int _convertTechType(Supply supply){
-    int techType = 1;
-    techTypeMap.forEach((key, value) {
-      if (supply.model == value) techType = key + 1;
-    });
 
-    return techType;
-  }
   static String insertDatabaseQuery(Supply supply) {
     int techType = 1;
     techTypeMap.forEach((key, value) {
       if (supply.model == value) techType = key + 1;
     });
-
     return '''
   INSERT INTO Supply (date, supplier, tech_type, model, count, price_per_pos)
   VALUES ('${supply.date}', '${supply.supplier}', ${techType.toString()}, '${supply.model}', 
@@ -170,6 +163,7 @@ class Supply {
     storageList.sort();
     return storageList;
   }
+
   static List<Supply> sort(List<Supply> dataSource,
       Map<String, String> sortRule, SfRangeValues value) {
     List<Supply> exitValue = []; /*Выходной список*/
@@ -257,9 +251,9 @@ class Supply {
     if (rules.isEmpty) exitValue = dataSource;
     return exitValue;
   }
-  static AlertDialog editDialog(
-      Supply element, List<TextEditingController> tmp, BuildContext context,
-      Function()? func, Function()? func2) {
+
+  static AlertDialog editDialog(Supply element, List<TextEditingController> tmp,
+      BuildContext context, Function()? func, Function()? func2) {
     tmp[0].text = element.supplier!;
     tmp[1].text = element.techType!;
     tmp[2].text = element.model!;
