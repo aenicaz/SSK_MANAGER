@@ -65,7 +65,7 @@ class _SupplyPageState extends State<SupplyPage> {
                         techType: tmp[1].text,
                         supplier: tmp[0].text,
                         date: tmp[3].text);
-                    var index = element.id! - 1;
+                    var index = element.id - 1;
                     _supplyList[index] = tmpSupply;
                     try {
                       DatabaseProvider.rawDatabaseQuery(
@@ -162,11 +162,34 @@ class _SupplyPageState extends State<SupplyPage> {
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
                         TabBar(labelColor: Colors.black87, tabs: [
-                          Tab(text: 'Создать поступление'),
-                          Tab(text: 'Таблица поступлений')
+                          Tab(text: 'Таблица поступлений'),
+                          Tab(text: 'Создать поступление')
                         ]),
                         Expanded(
                           child: TabBarView(children: [
+                            FutureBuilder(
+                              future: getDataFromDb(),
+                              builder: (context, snapshot) {
+                                if (_supplyList.isNotEmpty) {
+                                  return Row(
+                                    children: [
+                                      SupplyTable(
+                                          dataRowList: getDataRow(Supply.sort(
+                                              _supplyList, sortBy, _values))),
+                                      Expanded(
+                                        child: buildRightSideMenu(),
+                                      ),
+                                    ],
+                                  );
+                                } else {
+                                  return Center(
+                                    child: CircularProgressIndicator(
+                                      color: Colors.blue.shade700,
+                                    ),
+                                  );
+                                }
+                              },
+                            ),
                             FutureBuilder(
                               future: null,
                               builder: (context, snapshot) {
@@ -265,22 +288,26 @@ class _SupplyPageState extends State<SupplyPage> {
                                               onPressed: () async {
                                                 try {
                                                   var tmpRecord =
-                                                  validateRecord();
+                                                      validateRecord();
                                                   for (var i = 0;
-                                                  i < tmpRecord.count;
-                                                  i++) {
+                                                      i < tmpRecord.count;
+                                                      i++) {
                                                     var tmpComputer = Computer(
-                                                        invNumber: lastInvNumber,
+                                                        invNumber:
+                                                            lastInvNumber,
                                                         model: tmpRecord.model,
                                                         supplyId: tmpRecord.id
                                                             .toString(),
                                                         cleanDate:
-                                                        tmpRecord.date);
-                                                    lastInvNumber = (int.parse(lastInvNumber) + 1).toString();
+                                                            tmpRecord.date);
+                                                    lastInvNumber = (int.parse(
+                                                                lastInvNumber) +
+                                                            1)
+                                                        .toString();
                                                     await DatabaseProvider
                                                         .rawDatabaseQuery(Computer
-                                                        .insertDatabaseQuery(
-                                                        tmpComputer));
+                                                            .insertDatabaseQuery(
+                                                                tmpComputer));
                                                   }
                                                   _supplyList.add(tmpRecord);
                                                   await DatabaseProvider
@@ -308,29 +335,6 @@ class _SupplyPageState extends State<SupplyPage> {
                                         ],
                                       ),
                                     ],
-                                  );
-                                }
-                              },
-                            ),
-                            FutureBuilder(
-                              future: getDataFromDb(),
-                              builder: (context, snapshot) {
-                                if (_supplyList.isNotEmpty) {
-                                  return Row(
-                                    children: [
-                                      SupplyTable(
-                                          dataRowList: getDataRow(Supply.sort(
-                                              _supplyList, sortBy, _values))),
-                                      Expanded(
-                                        child: buildRightSideMenu(),
-                                      ),
-                                    ],
-                                  );
-                                } else {
-                                  return Center(
-                                    child: CircularProgressIndicator(
-                                      color: Colors.blue.shade700,
-                                    ),
                                   );
                                 }
                               },

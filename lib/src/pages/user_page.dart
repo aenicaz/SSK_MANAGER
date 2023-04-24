@@ -37,24 +37,20 @@ class _UserPageState extends State<UserPage> {
       dataList
           .add(DataRow(color: MaterialStateProperty.all<Color>(color), cells: [
         DataCell(onTap: () {
-           showDialog(
+          showDialog(
             context: context,
             builder: (context) {
               List<TextEditingController> tmp =
                   List.generate(10, (index) => TextEditingController());
               return User.editDialog(element, tmp, context, () {
                 try {
+                  var tmpUser = User(
+                      name: tmp[0].text,
+                      status: tmp[1].text,
+                      jobTitle: tmp[2].text);
+                  DatabaseProvider.rawDatabaseQuery(
+                      User.updateDatabaseQuery(tmpUser));
                   setState(() {
-                    var tmpUser = User(
-                        name : tmp[0].text,
-                        status : tmp[1].text,
-                        jobTitle : tmp[2].text
-                    );
-                    var index = element.id! - 1;
-                    _userList[index] = tmpUser;
-
-                    DatabaseProvider.rawDatabaseQuery(
-                        User.updateDatabaseQuery(tmpUser));
                     Navigator.pop(context);
                   });
                 } catch (e) {
@@ -104,7 +100,6 @@ class _UserPageState extends State<UserPage> {
 
   @override
   void initState() {
-    getDataFromDb();
     super.initState();
   }
 
@@ -245,28 +240,32 @@ class _UserPageState extends State<UserPage> {
                 onPressed: () {
                   showDialog(
                     context: context,
-                    builder: (context){
+                    builder: (context) {
                       List<TextEditingController> tmp =
-                      List.generate(10, (index) => TextEditingController());
+                          List.generate(10, (index) => TextEditingController());
                       return User.addDialog(tmp, context, () {
                         var tmpUser = User(
-                          name : tmp[0].text,
-                          status : tmp[1].text,
-                          jobTitle : tmp[2].text
-                        );
+                            name: tmp[0].text,
+                            status: tmp[1].text,
+                            jobTitle: tmp[2].text);
                         try {
                           setState(() {
-                            DatabaseProvider.rawDatabaseQuery(User.insertDatabaseQuery(tmpUser));
+                            DatabaseProvider.rawDatabaseQuery(
+                                User.insertDatabaseQuery(tmpUser));
                             _userList.add(tmpUser);
-                            ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+                            ScaffoldMessenger.of(context)
+                                .showSnackBar(const SnackBar(
                               content: Text("Запись добавлена"),
                             ));
                           });
                         } catch (e) {
-                          ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-                            content: Text("Ошибка: заполните все доступные поля"),
+                          ScaffoldMessenger.of(context)
+                              .showSnackBar(const SnackBar(
+                            content:
+                                Text("Ошибка: заполните все доступные поля"),
                           ));
-                        };
+                        }
+                        ;
                       });
                     },
                   );

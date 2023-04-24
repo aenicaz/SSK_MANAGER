@@ -63,7 +63,12 @@ class DatabaseProvider {
     var databaseFactory = databaseFactoryFfi;
     var db = await databaseFactory.openDatabase(databaseUrl);
 
-    databaseData = await db.rawQuery('select * from "$armTableName"');
+    databaseData = await db.rawQuery('''
+    SELECT Arm.id, Arm.armNumber, Computers.model, Computers.invNumber, User.name, Arm.receiveDate, Arm.returnDate, Arm.workplace, Arm.room
+    FROM Arm
+    INNER JOIN User on User.id = Arm.user_id
+    INNER JOIN Computers on Computers.id = Arm.equipment_id
+    ''');
 
     await db.close();
 
@@ -74,6 +79,7 @@ class DatabaseProvider {
       iterator++;
     }
 
+    debugPrint(databaseData.toString());
     return armList;
   }
 

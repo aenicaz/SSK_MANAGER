@@ -20,7 +20,9 @@ class _ArmPageState extends State<ArmPage> {
     'User id': '',
     'ReceiveDate': '',
     'ReturnDate': '',
-    'Workplace': ''
+    'Model': '',
+    'Workplace': '',
+    'Room': ''
   };
 
   TextEditingController nameTextController = TextEditingController();
@@ -78,11 +80,12 @@ class _ArmPageState extends State<ArmPage> {
             Text('')),
         DataCell(Text(element.id.toString())),
         DataCell(Text(element.armNumber.toString())),
-        DataCell(Text(element.equipmentId.toString())),
+        DataCell(Text(element.armModel.toString())),
         DataCell(Text(element.userId.toString())),
         DataCell(Text(element.receiveDate.toString())),
         DataCell(Text(element.returnDate.toString())),
-        DataCell(Text(element.workplace.toString()))
+        DataCell(Text(element.workplace.toString())),
+        DataCell(Text(element.room.toString()))
       ]));
 
       iterator++;
@@ -135,13 +138,12 @@ class _ArmPageState extends State<ArmPage> {
                   child: Column(
                     children: [
                       const TabBar(labelColor: Colors.black87, tabs: [
-                        Tab(text: "Добавить АРМ"),
-                        Tab(text: "Таблица АРМ")
+                        Tab(text: "Таблица АРМ"),
+                        Tab(text: "Добавить АРМ")
                       ]),
                       Expanded(
                           child: TabBarView(
                         children: [
-                          const Placeholder(),
                           FutureBuilder(
                             future: getDataFromDb(),
                             builder: (context, snapshot) {
@@ -163,6 +165,7 @@ class _ArmPageState extends State<ArmPage> {
                               }
                             },
                           ),
+                          const Placeholder(),
                         ],
                       )),
                     ],
@@ -209,7 +212,7 @@ class _ArmPageState extends State<ArmPage> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    const Text('Рабочее место'),
+                    const Text('Здание'),
                     DropdownButton(
                       isExpanded: true,
                       focusColor: Colors.grey.shade200,
@@ -226,6 +229,33 @@ class _ArmPageState extends State<ArmPage> {
                         setState(() {
                           debugPrint(value.toString());
                           sortBy['Workplace'] = value.toString();
+                        });
+                      },
+                    ),
+                  ],
+                ),
+              ),
+              Padding(
+                padding: const EdgeInsets.all(10.0),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    const Text('Кабинет'),
+                    DropdownButton(
+                      isExpanded: true,
+                      focusColor: Colors.grey.shade200,
+                      borderRadius: const BorderRadius.all(Radius.circular(10)),
+                      value: sortBy['Room'],
+                      items: List<DropdownMenuItem<String>>.generate(
+                          Arm.getUniqueValue(_armList, 'Room').length, (index) {
+                        var tmp = Arm.getUniqueValue(_armList, 'Room');
+                        return DropdownMenuItem(
+                            value: tmp[index], child: Text(tmp[index]));
+                      }),
+                      onChanged: (Object? value) {
+                        setState(() {
+                          debugPrint(value.toString());
+                          sortBy['Room'] = value.toString();
                         });
                       },
                     ),

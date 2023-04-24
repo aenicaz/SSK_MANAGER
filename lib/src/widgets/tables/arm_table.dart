@@ -22,7 +22,7 @@ class ArmTable extends StatelessWidget {
             size: ColumnSize.S,
           ),
           DataColumn2(
-            label: Text('Номер оборудования'),
+            label: Text('Модель'),
             size: ColumnSize.S,
           ),
           DataColumn2(
@@ -34,11 +34,15 @@ class ArmTable extends StatelessWidget {
             size: ColumnSize.S,
           ),
           DataColumn2(
-            label: Text('Дата получения'),
+            label: Text('Дата сдачи'),
             size: ColumnSize.S,
           ),
           DataColumn2(
-            label: Text('Рабочее место'),
+            label: Text('Здание'),
+            size: ColumnSize.S,
+          ),
+          DataColumn2(
+            label: Text('Кабинет'),
             size: ColumnSize.S,
           ),
         ],

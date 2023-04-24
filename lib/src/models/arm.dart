@@ -10,26 +10,32 @@ class ArmFields {
     userId,
     receiveDate,
     returnDate,
+    armModel,
     workplace,
+    room
   ];
 
   static const String id = 'id';
   static const String armNumber = 'armNumber';
+  static const String armModel = 'model';
   static const String equipmentId = 'equipment_id';
-  static const String userId = 'user_id';
+  static const String userId = 'name';
   static const String receiveDate = 'receiveDate';
   static const String returnDate = 'returnDate';
   static const String workplace = 'workplace';
+  static const String room = 'room';
 }
 
 class Arm {
   int? id;
   int? armNumber;
   int? equipmentId;
-  int? userId;
+  String? userId;
   String? receiveDate;
   String? returnDate;
+  String? armModel;
   String? workplace;
+  String? room;
 
   Arm({
     this.id,
@@ -38,13 +44,16 @@ class Arm {
     this.userId,
     this.receiveDate,
     this.returnDate,
+    this.armModel,
     this.workplace,
+    this.room,
   });
 
   @override
   String toString() {
     return '''Recod: {id: $id, armNumber: $armNumber, equipmentId: $equipmentId, 
-    userId: $userId, receiveDate: $receiveDate, returnDate: $returnDate, workplace: $workplace}''';
+    userId: $userId, receiveDate: $receiveDate, returnDate: $returnDate, workplace: $workplace,
+    room: $room, arm: $armModel}''';
   }
 
   Map<String, dynamic> toMap() {
@@ -52,10 +61,12 @@ class Arm {
       'id': id,
       'armNumber': armNumber,
       'equipmentId': equipmentId,
-      'userId': userId,
+      'name': userId,
       'receiveDate': receiveDate,
       'returnDate': returnDate,
+      'model': armModel,
       'workplace': workplace,
+      'room': room,
     };
   }
 
@@ -67,7 +78,9 @@ class Arm {
 	    ${ArmFields.userId} = "${arm.userId}",
 	    ${ArmFields.receiveDate} = "${arm.receiveDate}",
 	    ${ArmFields.returnDate} = "${arm.returnDate}",
-	    ${ArmFields.workplace} = "${arm.workplace}"
+	    ${ArmFields.workplace} = "${arm.workplace}",
+	    ${ArmFields.armModel} = "${arm.armModel}",
+	    ${ArmFields.room} = "${arm.room}"
 	  where ${ArmFields.id} = ${arm.id}
   ''';
   }
@@ -80,7 +93,9 @@ class Arm {
     ${ArmFields.userId},
     ${ArmFields.receiveDate},
     ${ArmFields.returnDate},
-    ${ArmFields.workplace}
+    ${ArmFields.armModel},
+    ${ArmFields.workplace},
+    ${ArmFields.room}
   )
   VALUES (
     "${arm.armNumber}",
@@ -88,7 +103,9 @@ class Arm {
     "${arm.userId}",
     "${arm.receiveDate}",
     "${arm.returnDate}",
-    "${arm.workplace}"
+    "${arm.armModel}",
+    "${arm.workplace}",
+    "${arm.room}"
   )
   ''';
   }
@@ -107,16 +124,20 @@ class Arm {
         ArmFields.userId: userId,
         ArmFields.receiveDate: receiveDate,
         ArmFields.returnDate: returnDate,
-        ArmFields.workplace: workplace
+        ArmFields.armModel: armModel,
+        ArmFields.workplace: workplace,
+        ArmFields.room: room
       };
 
   static Arm fromJson(Map<String, Object?> json) => Arm(
       id: json[ArmFields.id] as int?,
       armNumber: json[ArmFields.armNumber] as int?,
       equipmentId: json[ArmFields.equipmentId] as int?,
-      userId: json[ArmFields.userId] as int?,
+      userId: json[ArmFields.userId] as String?,
       receiveDate: json[ArmFields.receiveDate] as String?,
       returnDate: json[ArmFields.returnDate] as String?,
+      armModel: json[ArmFields.armModel] as String?,
+      room: json[ArmFields.room] as String?,
       workplace: json[ArmFields.workplace] as String?);
 
   static List<Arm> sort(List<Arm> dataSource, Map<String, String> sortRule) {
@@ -142,6 +163,22 @@ class Arm {
       }
       exitValue = newSortedList;
     }
+    if (sortRule['Model']!.isNotEmpty && exitValue.isEmpty) {
+      for (var element in dataSource) {
+        if (element.armModel == sortRule['Model']!) {
+          exitValue.add(element);
+        }
+      }
+    } else if (sortRule['Model']!.isNotEmpty) {
+      List<Arm> newSortedList = [];
+
+      for (var element in exitValue) {
+        if (element.armModel == sortRule['Model']!) {
+          newSortedList.add(element);
+        }
+      }
+      exitValue = newSortedList;
+    }
     if (sortRule['Equipment id']!.isNotEmpty && exitValue.isEmpty) {
       for (var element in dataSource) {
         if (element.equipmentId == int.parse(sortRule['Equipment id']!)) {
@@ -160,7 +197,7 @@ class Arm {
     }
     if (sortRule['User id']!.isNotEmpty && exitValue.isEmpty) {
       for (var element in dataSource) {
-        if (element.userId == int.parse(sortRule['User id']!)) {
+        if (element.userId == sortRule['User id']!) {
           exitValue.add(element);
         }
       }
@@ -168,7 +205,7 @@ class Arm {
       List<Arm> newSortedList = [];
 
       for (var element in exitValue) {
-        if (element.userId == int.parse(sortRule['User id']!)) {
+        if (element.userId == sortRule['User id']!) {
           newSortedList.add(element);
         }
       }
@@ -217,6 +254,22 @@ class Arm {
 
       for (var element in exitValue) {
         if (element.workplace == sortRule['Workplace']) {
+          newSortedList.add(element);
+        }
+      }
+      exitValue = newSortedList;
+    }
+    if (sortRule['Room']!.isNotEmpty && exitValue.isEmpty) {
+      for (var element in dataSource) {
+        if (element.room == sortRule['Room']) {
+          exitValue.add(element);
+        }
+      }
+    } else if (sortRule['Room']!.isNotEmpty) {
+      List<Arm> newSortedList = [];
+
+      for (var element in exitValue) {
+        if (element.room == sortRule['Room']) {
           newSortedList.add(element);
         }
       }
@@ -271,11 +324,27 @@ class Arm {
           }
         }
         break;
+      case "Arm model":
+        storageList.add('');
+        for (var element in dataSource) {
+          if (!storageList.contains(element.armModel)) {
+            storageList.add(element.armModel);
+          }
+        }
+        break;
       case "Workplace":
         storageList.add('');
         for (var element in dataSource) {
           if (!storageList.contains(element.workplace)) {
             storageList.add(element.workplace);
+          }
+        }
+        break;
+      case "Room":
+        storageList.add('');
+        for (var element in dataSource) {
+          if (!storageList.contains(element.room)) {
+            storageList.add(element.room);
           }
         }
         break;
